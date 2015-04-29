@@ -1,4 +1,5 @@
 <?php
+
 $kategori = $this->session->userdata('id_kategori_user');
 if($kategori == 1){
     if($logged_in_admin) {
