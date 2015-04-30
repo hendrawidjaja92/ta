@@ -1,12 +1,32 @@
 <?php
+$id_user = $this->session->userdata('id_user');
 $username = $this->session->userdata('username');
 $email = $this->session->userdata('email');
 $password = $this->session->userdata('password');
-$nama_lengkap = $this->session->userdata('nama_lengkap');
+$nama_lengkap = $this->session->userdata('nama_user');
 $nama_perusahaan = $this->session->userdata('nama_perusahaan');
 $alamat = $this->session->userdata('alamat');
 $no_telepon = $this->session->userdata('no_telepon');
 $jenis_kelamin = $this->session->userdata('jenis_kelamin');
+$tgl_lahir = $this->session->userdata('tgl_lahir');
+$id_provinsi = $this->session->userdata('id_provinsi');
+$id_kota = $this->session->userdata('id_kota');
+//if(isset($_POST['save'])){
+    foreach ($news as $new):
+        $id_user = $new->id_user;
+        $username = $new->$username;
+        $email = $new->$email;
+        $password = $new->$password;
+        $nama_lengkap = $new->$nama_lengkap;
+        $nama_perusahaan = $new->$nama_perusahaan;
+        $alamat = $new->$alamat;
+        $no_telepon = $new->$no_telepon;
+        $jenis_kelamin = $new->$jenis_kelamin;
+        $tgl_lahir = $new->$tgl_lahir;
+        $id_provinsi = $new->$id_provinsi;
+        $id_kota = $new->$id_kota;
+    endforeach;
+//}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,7 +70,7 @@ $jenis_kelamin = $this->session->userdata('jenis_kelamin');
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="<?= base_url() ?>index.php/admin/ubah_akun">Ubah Akun</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_barang">Manage Barang</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_refund">Manage Refund</a></li>
@@ -121,16 +141,20 @@ $jenis_kelamin = $this->session->userdata('jenis_kelamin');
 </ul>
 
 <div class="judul-2 col-md-offset-2 col-sm-offset-2 col-xs-offset-2 row" data-example-id="carousel-with-captions">
+
+    <?php echo form_open('admin/update'); ?>
     <ul class="list-group judul-1">
         <li class="list-group-item judul-1">
             <h3>Ubah Akun</h3>
         </li>
     </ul>
     <br>
+
         <div class="col-md-9 col-md-offset-2">
             <?php echo form_label('Email :'); ?> <?php echo form_error('email'); ?>
         </div>
         <div class="col-md-5 col-md-offset-2">
+            <?php echo form_input(array('type' => 'hidden', 'id' => 'id_user', 'name' => 'id_user', 'class' => 'form-control', 'value' => $id_user)); ?>
             <?php echo form_input(array('id' => 'email', 'name' => 'email', 'class' => 'form-control', 'value' => $email)); ?>
         </div>
         <div class="col-md-9 col-md-offset-2">
@@ -155,64 +179,76 @@ $jenis_kelamin = $this->session->userdata('jenis_kelamin');
             <?php echo form_label('Nama Lengkap :'); ?> <?php echo form_error('nama_user'); ?>
         </div>
         <div class="col-md-4 col-md-offset-2">
-            <?php echo form_input(array('id' => 'nama_user', 'name' => 'nama_user', 'class' => 'form-control')); ?>
+            <?php echo form_input(array('id' => 'nama_user', 'name' => 'nama_user', 'class' => 'form-control', 'value' => $nama_lengkap)); ?>
         </div>
+
         <div class="col-md-9 col-md-offset-2">
             <?php echo form_label('Nama Perusahaan :'); ?> <?php echo form_error('nama_perusahaan'); ?>
         </div>
         <div class="col-md-5 col-md-offset-2">
-            <?php echo form_input(array('id' => 'nama_perusahaan', 'name' => 'nama_perusahaan', 'class' => 'form-control')); ?>
+            <?php echo form_input(array('id' => 'nama_perusahaan', 'name' => 'nama_perusahaan', 'class' => 'form-control', 'value' => $nama_perusahaan)); ?>
         </div>
         <div class="col-md-9 col-md-offset-2">
             <?php echo form_label('Alamat :'); ?> <?php echo form_error('alamat'); ?>
         </div>
         <div class="col-md-5 col-md-offset-2">
-            <?php echo form_input(array('id' => 'alamat', 'name' => 'alamat', 'class' => 'form-control')); ?>
+            <?php echo form_input(array('id' => 'alamat', 'name' => 'alamat', 'class' => 'form-control', 'value' => $alamat)); ?>
         </div>
         <div class="col-md-9 col-md-offset-2">
             <?php echo form_label('No Telepon :'); ?> <?php echo form_error('no_telepon'); ?>
         </div>
         <div class="col-md-3 col-md-offset-2">
-            <?php echo form_input(array('id' => 'no_telepon', 'name' => 'no_telepon', 'class' => 'form-control')); ?>
+            <?php echo form_input(array('id' => 'no_telepon', 'name' => 'no_telepon', 'class' => 'form-control', 'value' => $no_telepon)); ?>
         </div>
         <div class="col-md-9 col-md-offset-2">
             <?php echo form_label('Jenis Kelamin :', 'jenis_kelamin'); ?>
         </div>
         <div class="col-md-3 col-md-offset-2">
             <div class="btn-group" data-toggle="buttons">
+                <?php if($jenis_kelamin == 1){?>
                 <label class="btn btn-gender-man active">
-                    <input type="radio" name="jenis_kelamin" id="a" autocomplete="off"
-                           checked>Laki-laki
+                    <input type="radio" name="jenis_kelamin" id="jenis_kelamin" autocomplete="off" value="1" checked>Laki-laki
                 </label>
                 <label class="btn btn-gender-girl">
-                    <input type="radio" name="jenis_kelamin" id="b" autocomplete="off">Perempuan
+                    <input type="radio" name="jenis_kelamin" id="jenis_kelamin" autocomplete="off" value="2">Perempuan
                 </label>
+                <?php }else if($jenis_kelamin == 2){?>
+                <label class="btn btn-gender-man">
+                    <input type="radio" name="jenis_kelamin" id="jenis_kelamin" autocomplete="off" value="1">Laki-laki
+                </label>
+                <label class="btn btn-gender-girl active">
+                    <input type="radio" name="jenis_kelamin" id="jenis_kelamin" autocomplete="off" value="2" checked>Perempuan
+                </label>
+                <?php }?>
+
             </div>
         </div>
         <div class="col-md-9 col-md-offset-2">
             <?php echo form_label('Tanggal Lahir :', 'tgl_lahir'); ?>
         </div>
         <div class="col-md-3 col-md-offset-2">
-            <input type="date" name=tgl_lahir id="tgl_lahir" class="form-control"/>
+            <input type="date" name=tgl_lahir id="tgl_lahir" class="form-control" value="<?php echo $tgl_lahir?>"/>
         </div>
         <div class="col-md-9 col-md-offset-2">
             <?php echo form_label('Provinsi :', 'provinsi'); ?>
         </div>
         <div class="col-md-4 col-md-offset-2">
-            <?php echo form_dropdown(array('id' => 'provinsi', 'name' => 'provinsi', 'class' => 'form-control'), $provinsiDrop); ?>
+            <?php echo form_dropdown(array('id' => 'provinsi', 'name' => 'provinsi', 'class' => 'form-control', 'selected' => $id_provinsi), $provinsiDrop); ?>
         </div>
         <div class="col-md-9 col-md-offset-2">
             <?php echo form_label('Kota :', 'kota'); ?>
         </div>
         <div class="col-md-5 col-md-offset-2">
-            <?php echo form_dropdown(array('id' => 'kota', 'name' => 'kota', 'class' => 'form-control')); ?>
+            <?php echo form_dropdown(array('id' => 'kota', 'name' => 'kota', 'class' => 'form-control', 'selected' => $id_kota), $kotaDrop); ?>
             <br>
             <br>
         </div>
 
     <div class="modal-footer col-md-10 col-md-offset-1">
-        <?php echo form_button(array('id' => 'save', 'name' => 'save', 'content' => 'Save', 'class' => 'btn btn-ok')); ?>
+        <?php echo form_submit(array('id' => 'save', 'name' => 'save', 'value' => 'Save', 'class' => 'btn btn-ok')); ?>
     </div>
+    <?php echo form_close(); ?>
+
 </div>
 
 <nav class="modal-footer">
@@ -242,6 +278,13 @@ $jenis_kelamin = $this->session->userdata('jenis_kelamin');
     $('.carousel').carousel({
         interval: 5000
     })
+
+
+    $('input').focus(function(){
+        $(this).prev().addClass('active');
+    }).blur(function(){
+        $(this).prev().removeClass('active');
+    });
 </script>
 </body>
 </html>

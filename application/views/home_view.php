@@ -186,7 +186,7 @@
                                         <?php echo form_label('Kota :', 'reg_kota'); ?>
                                     </div>
                                     <div class="col-md-5 col-md-offset-3">
-                                        <?php echo form_dropdown(array('id' => 'reg_kota', 'name' => 'reg_kota', 'class' => 'form-control')); ?>
+                                        <?php echo form_dropdown(array('id' => 'reg_kota', 'name' => 'reg_kota', 'class' => 'form-control'),$kotaDrop); ?>
                                     </div>
 
                                 </div>

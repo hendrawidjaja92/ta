@@ -18,7 +18,7 @@ class Home extends CI_Controller {
     function index(){
 
         $data['provinsiDrop'] = $this->kota_provinsi_model->getProvinsi();
-        $this->load->view('home_view', $data);
+        $this->load->view('home_view', $data );
     }
     public function buildDropKota()
 {

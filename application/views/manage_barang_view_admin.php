@@ -1,3 +1,6 @@
+<?php
+$id_user = $this->session->userdata('id_user');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,8 +43,7 @@
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">=Nama User=<span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="<?= base_url() ?>index.php/admin/ubah_akun">Ubah Akun</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a></li>                        <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_barang">Manage Barang</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_refund">Manage Refund</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_supplier">Manage Supplier</a></li>

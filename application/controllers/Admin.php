@@ -20,6 +20,7 @@ class Admin extends CI_Controller {
             $this->logged_in_admin = false;
         }
         $this->load->model('kota_provinsi_model');
+        $this->load->model('admin_model');
     }
 
     function index(){
@@ -31,6 +32,37 @@ class Admin extends CI_Controller {
     }
     function ubah_akun(){
         $data['provinsiDrop'] = $this->kota_provinsi_model->getProvinsi();
+
+        $id_provinsi = $this->session->userdata('id_provinsi');
+
+        $data['kotaDrop'] = $this->kota_provinsi_model->getKota($id_provinsi);
+        $this->load->view('ubah_akun_view_admin', $data);
+
+    }
+    function update(){
+
+        $data_user = array(
+
+            'id_user' => $this->input->post('id_user'),
+            'email' => $this->input->post('email'),
+            'nama_user' => $this->input->post('nama_user'),
+            'alamat' => $this->input->post('alamat'),
+            'no_telepon' => $this->input->post('no_telepon'),
+            'jenis_kelamin' => $this->input->post('jenis_kelamin'),
+            'tgl_lahir' => $this->input->post('tgl_lahir'),
+//            'id_provinsi' => $this->input->post('provinsi'),
+            'id_kota' => $this->input->post('kota'),
+
+        );
+        $id = $data_user['id_user'];
+//        die($data_user['alamat']);
+        $this->admin_model->update_admin($id,$data_user);
+
+        $data['news'] = $this->admin_model->show($id);
+//        $data['provinsiDrop'] = $this->kota_provinsi_model->getProvinsi();
+//        $id_provinsi = $this->session->userdata('id_provinsi');
+//        $data['kotaDrop'] = $this->kota_provinsi_model->getKota($id_provinsi);
+//        redirect('/admin/ubah_akun', $data_user,TRUE);
         $this->load->view('ubah_akun_view_admin', $data);
     }
     function manage_pembayaran(){

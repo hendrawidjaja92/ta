@@ -25,6 +25,20 @@ class kota_provinsi_model extends CI_Model{
         // the fetching data from database is return
         return $data;
     }
+    public function getKota($id)
+    {
+        $this->db->select('id_kota,nama_kota');
+        $this->db->from('kota');
+        $this->db->where('id_provinsi',$id);
+
+        $query = $this->db->get();
+        // the query mean select cat_id,category from category
+        foreach($query->result_array() as $row){
+            $data[$row['id_kota']]=$row['nama_kota'];
+        }
+        // the fetching data from database is return
+        return $data;
+    }
     //fill your cities dropdown depending on the selected city
     public function getKotaByProvinsi($id)
     {

@@ -6633,7 +6633,7 @@ button.close {
 .open > .dropdown-toggle.btn-gender-man {
     color: #000;
     background-color: #99d9ea;
-    border-color: #2badce;
+    border-color: #000;
 }
 .btn-gender-man:active,
 .btn-gender-man.active,
@@ -6678,7 +6678,7 @@ fieldset[disabled] .btn-gender-man.active {
 .open > .dropdown-toggle.btn-gender-girl {
     color: #000;
     background-color: #ffaec9;
-    border-color: #ff6295;
+    border-color: #000;
 }
 .btn-gender-girl:active,
 .btn-gender-girl.active,

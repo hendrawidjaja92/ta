@@ -31,17 +31,16 @@ class login_model extends CI_Model{
         $email = $this->input->post('email');
         $password = $this->input->post('password');
 
-        $sql = "SELECT * FROM user WHERE email = '{$email}' LIMIT 1";
+        $sql = "SELECT * FROM user u JOIN kota k ON u.id_kota = k.id_kota JOIN provinsi p ON k.id_provinsi = p.id_provinsi WHERE email = '{$email}' LIMIT 1";
+//        $sql = "SELECT * FROM user WHERE email = '{$email}' LIMIT 1";
         $result = $this->db->query($sql);
         $row = $result->row();
-
+//        printf($row->status_user);
+//        printf($row->password);
+//        printf("===");
         if($result->num_rows() === 1){
             if($row->status_user){
 
-                printf($row->status_user);
-                printf($row->password);
-                printf("===");
-                printf($row->id_kategori_user);
                 if($row->password === ($password)){
 
                     $session_data = array(
@@ -55,6 +54,8 @@ class login_model extends CI_Model{
                         'jenis_kelamin' => $row->jenis_kelamin,
                         'tgl_lahir' => $row->tgl_lahir,
                         'id_kategori_user' => $row->id_kategori_user,
+                        'id_kota' => $row->id_kota,
+                        'id_provinsi' => $row->id_provinsi,
 
                     );
                     if($row->id_kategori_user == 1){
@@ -94,6 +95,8 @@ class login_model extends CI_Model{
             'jenis_kelamin' => $session_data['jenis_kelamin'],
             'tgl_lahir' => $session_data['tgl_lahir'],
             'id_kategori_user' => $session_data['id_kategori_user'],
+            'id_kota' => $session_data['id_kota'],
+            'id_provinsi' => $session_data['id_provinsi'],
             'logged_in_admin' => 1,
             'logged_in_pegawai' => 1,
             'logged_in_seller' => 1,
