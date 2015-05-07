@@ -22,6 +22,7 @@ $id_user = $this->session->userdata('id_user');
 
 </head>
 <body class="cover">
+<?php foreach($user->result() as $u):?>
 
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
@@ -41,9 +42,9 @@ $id_user = $this->session->userdata('id_user');
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="<?= base_url() ?>index.php/admin">Home</a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">=Nama User=<span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $u->username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a></li>                        <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $u->id_user; ?>">Ubah Akun</a></li>                        <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_barang">Manage Barang</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_refund">Manage Refund</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_supplier">Manage Supplier</a></li>
@@ -65,6 +66,7 @@ $id_user = $this->session->userdata('id_user');
     </div>
     <!-- /.container-fluid -->
 </nav>
+<?php endforeach;?>
 
 <ul class="list-group col-md-2 col-sm-2 col-xs-2">
     <li class="list-group-item kategori">
@@ -118,6 +120,8 @@ $id_user = $this->session->userdata('id_user');
             <h3>Manage Barang</h3>
         </li>
     </ul>
+
+
     <br>
 
 </div>

@@ -1,5 +1,6 @@
 <?php
-$id_user = $this->session->userdata('id_user');
+$id_user  = $this->session->userdata('id_user');
+$username = $this->session->userdata('username');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -41,9 +42,11 @@ $id_user = $this->session->userdata('id_user');
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="<?= base_url() ?>index.php/admin">Home</a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">=Nama User=<span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a></li>                        <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a>
+                        </li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_barang">Manage Barang</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_refund">Manage Refund</a></li>
@@ -55,7 +58,7 @@ $id_user = $this->session->userdata('id_user');
                         <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Penjualan</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Pembelian</a></li>
                         <li class="divider"></li>
-                        <li><a href="#">Logout</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/logout">Logout</a></li>
                     </ul>
                 </li>
                 <li><a href="#">Tentang Kami</a></li>
@@ -113,13 +116,73 @@ $id_user = $this->session->userdata('id_user');
     </li>
 </ul>
 
-<div class="judul-2 col-md-offset-2 col-sm-offset-2 col-xs-offset-2 row" data-example-id="carousel-with-captions">
+<div class="judul-2 col-md-offset-0 col-sm-offset-2 col-xs-offset-2 col-md-10 row"
+     data-example-id="carousel-with-captions">
     <ul class="list-group judul-1">
         <li class="list-group-item judul-1">
             <h3>Manage Supplier</h3>
         </li>
     </ul>
+    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/add_supplier">ADD <span
+                class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
+
+    <table class="table table-hover">
+
+        <tr style="background-color: black; color: white">
+            <th>#</th>
+            <th>Nama</th>
+            <th>Email</th>
+            <th>Nama Perusahaan</th>
+            <th>Alamat</th>
+            <th>No Telepon</th>
+            <th>Jenis Kelamin</th>
+            <th>View</th>
+            <th>Edit</th>
+            <th>Delete</th>
+
+        </tr>
+        <?php $i = 1; ?>
+
+        <?php if ($supplier->result()) { ?>
+
+            <?php foreach ($supplier->result() as $s): ?>
+
+
+                <?php $data[$i] = $s->id_user ?>
+                <tr
+                    class="<?= ($s->status_user == 1) ? "alert-success" : "" ?> <?= ($s->status_user == 2) ? "alert-danger" : "" ?>">
+                    <td><?= $i ?></td>
+                    <td><?= $s->nama_user ?></td>
+                    <td><?= $s->email ?></td>
+                    <td><?= $s->nama_perusahaan ?></td>
+                    <td><?= $s->alamat ?></td>
+                    <td><?= $s->no_telepon ?></td>
+                    <td><?= ($s->jenis_kelamin == 1) ? "Laki-laki" : "Perempuan" ?></td>
+                    <td><a href="<?= base_url() ?>index.php/admin/view_supplier/<?= $s->id_user ?>"
+                           class="glyphicon glyphicon-user" aria-hidden="true"> VIEW</a></td>
+                    <td><a href="<?= base_url() ?>index.php/admin/edit_supplier/<?= $s->id_user ?>"
+                           class="glyphicon glyphicon-cog" aria-hidden="true"> EDIT</a></td>
+                    <td><a href="#" onclick="confDelete(<?= $s->id_user ?>)"
+                           class="glyphicon glyphicon-remove" aria-hidden="true">
+                            DELETE</a></td>
+                    <?php $i += 1; ?>
+                </tr>
+
+            <?php endforeach; ?>
+
+        <?php } else { ?>
+            <tr>
+                <td colspan="10" align="center"><b> --------------- Data is empty ---------------</b></td>
+            </tr>
+        <?php } ?>
+
+
+
+    </table>
+    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/add_supplier">ADD <span
+                class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
     <br>
+
 
 </div>
 
@@ -146,6 +209,14 @@ $id_user = $this->session->userdata('id_user');
             });
         });
     });
+
+    function confDelete(id) {
+        var confimation = window.confirm("Are you sure want to delete this supplier");
+        if (confimation) {
+            window.location = "<?= base_url() ?>index.php/admin/delete_supplier/" + id;
+        }
+    }
+
 
     $('.carousel').carousel({
         interval: 5000

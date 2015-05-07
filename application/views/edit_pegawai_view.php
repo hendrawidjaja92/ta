@@ -1,18 +1,6 @@
 <?php
-//$id_user = $this->session->userdata('id_user');
-//$username = $this->session->userdata('username');
-//$email = $this->session->userdata('email');
-//$password = $this->session->userdata('password');
-//$nama_lengkap = $this->session->userdata('nama_user');
-//$nama_perusahaan = $this->session->userdata('nama_perusahaan');
-//$alamat = $this->session->userdata('alamat');
-//$no_telepon = $this->session->userdata('no_telepon');
-//$jenis_kelamin = $this->session->userdata('jenis_kelamin');
-//$tgl_lahir = $this->session->userdata('tgl_lahir');
-//$id_provinsi = $this->session->userdata('id_provinsi');
-//$id_kota = $this->session->userdata('id_kota');
-//if(isset($_POST['save'])){
-
+$id_user = $this->session->userdata('id_user');
+$username = $this->session->userdata('username');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -35,7 +23,7 @@
 
 </head>
 <body class="cover">
-<?php foreach ($user->result() as $u): ?>
+
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -54,11 +42,10 @@
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="<?= base_url() ?>index.php/admin">Home</a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                       aria-expanded="false"><?php echo $u->username; ?><span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $u->id_user; ?>">Ubah
-                                Akun</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a>
+                        </li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_barang">Manage Barang</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_refund">Manage Refund</a></li>
@@ -128,22 +115,24 @@
     </li>
 </ul>
 
-<div class="judul-2 col-md-offset-0 col-sm-offset-2 col-xs-offset-2 col-md-10 row" data-example-id="carousel-with-captions">
-
-    <?php echo form_open('admin/update'); ?>
-
+<div class="judul-2 col-md-offset-2 col-sm-offset-2 col-xs-offset-2 row" data-example-id="carousel-with-captions">
     <ul class="list-group judul-1">
         <li class="list-group-item judul-1">
-            <h3>Ubah Akun</h3>
+            <h3>Manage Pegawai</h3>
         </li>
     </ul>
+    <h3 style="padding-left: 5%">EDIT Pegawai <span class="glyphicon glyphicon-cog" aria-hidden="true"></span></h3>
+
+    <?php foreach ($user->result() as $u): ?>
+
+    <?php echo form_open('admin/edit_pegawai/'.$u->id_user); ?>
+
+
     <br>
-
-    <div class="col-md-9 col-md-offset-2">
-        <?php echo form_label('Email :'); ?>
+    <div class="col-md-9 col-md-offset-1">
+        <?php echo form_label('Username :'); ?>
     </div>
-
-    <div class="col-md-5 col-md-offset-2">
+    <div class="col-md-4 col-md-offset-1">
         <?php echo form_input(array(
             'type'  => 'hidden',
             'id'    => 'id_user',
@@ -152,10 +141,28 @@
             'value' => $u->id_user
         )); ?>
         <?php echo form_input(array(
+            'id'    => 'username',
+            'name'  => 'username',
+            'class' => 'form-control',
+            'value' => set_value('username', $u->username)
+        )); ?>
+    </div>
+    <?php echo form_error('username'); ?>
+    <div class="col-md-9 col-md-offset-1">
+        <?php echo form_label('Email :'); ?>
+    </div>
+    <div class="col-md-5 col-md-offset-1">
+        <!--            --><?php //echo form_input(array(
+        //                'type'  => 'hidden',
+        //                'id'    => 'id_user',
+        //                'name'  => 'id_user',
+        //                'class' => 'form-control',
+        //            )); ?>
+        <?php echo form_input(array(
             'id'    => 'email',
             'name'  => 'email',
             'class' => 'form-control',
-            'value' => $u->email
+            'value' => set_value('email', $u->email)
         )); ?>
     </div>
     <?php echo form_error('email'); ?>
@@ -167,25 +174,25 @@
     <!--            --><?php //echo form_password(array('id' => 'old_password', 'name' => 'old_password', 'class' => 'form-control')); ?>
     <!--        </div>-->
     <!--        --><?php //echo form_error('old_password'); ?>
-    <div class="col-md-9 col-md-offset-2">
-        <?php echo form_label('New Password :'); ?>
+    <div class="col-md-9 col-md-offset-1">
+        <?php echo form_label('Password :'); ?>
     </div>
-    <div class="col-md-4 col-md-offset-2">
-        <?php echo form_password(array('id' => 'new_password', 'name' => 'new_password', 'class' => 'form-control')); ?>
+    <div class="col-md-4 col-md-offset-1">
+        <?php echo form_password(array('id' => 'password', 'name' => 'password', 'class' => 'form-control')); ?>
     </div>
-    <?php echo form_error('new_password'); ?>
-    <div class="col-md-9 col-md-offset-2">
+    <?php echo form_error('password'); ?>
+    <div class="col-md-9 col-md-offset-1">
         <?php echo form_label('Re-Password :'); ?>
     </div>
 
-    <div class="col-md-4 col-md-offset-2">
+    <div class="col-md-4 col-md-offset-1">
         <?php echo form_password(array('id' => 're_password', 'name' => 're_password', 'class' => 'form-control')); ?>
     </div>
     <?php echo form_error('re_password'); ?>
-    <div class="col-md-9 col-md-offset-2">
+    <div class="col-md-9 col-md-offset-1">
         <?php echo form_label('Nama Lengkap :'); ?>
     </div>
-    <div class="col-md-4 col-md-offset-2">
+    <div class="col-md-4 col-md-offset-1">
         <?php echo form_input(array(
             'id'    => 'nama_user',
             'name'  => 'nama_user',
@@ -194,22 +201,22 @@
         )); ?>
     </div>
     <?php echo form_error('nama_user'); ?>
-    <div class="col-md-9 col-md-offset-2">
-        <?php echo form_label('Nama Perusahaan :'); ?>
-    </div>
-    <div class="col-md-5 col-md-offset-2">
-        <?php echo form_input(array(
-            'id'    => 'nama_perusahaan',
-            'name'  => 'nama_perusahaan',
-            'class' => 'form-control',
-            'value' => set_value('nama_perusahaan', $u->nama_perusahaan)
-        )); ?>
-    </div>
-    <?php echo form_error('nama_perusahaan'); ?>
-    <div class="col-md-9 col-md-offset-2">
+    <!--        <div class="col-md-9 col-md-offset-1">-->
+    <!--            --><?php //echo form_label('Nama Perusahaan :'); ?>
+    <!--        </div>-->
+    <!--        <div class="col-md-5 col-md-offset-1">-->
+    <!--            --><?php //echo form_input(array(
+    //                'id'    => 'nama_perusahaan',
+    //                'name'  => 'nama_perusahaan',
+    //                'class' => 'form-control',
+    ////                'value' => set_value('nama_perusahaan', $u->nama_perusahaan)
+    //            )); ?>
+    <!--        </div>-->
+    <!--        --><?php //echo form_error('nama_perusahaan'); ?>
+    <div class="col-md-9 col-md-offset-1">
         <?php echo form_label('Alamat :'); ?>
     </div>
-    <div class="col-md-5 col-md-offset-2">
+    <div class="col-md-5 col-md-offset-1">
         <?php echo form_input(array(
             'id'    => 'alamat',
             'name'  => 'alamat',
@@ -218,10 +225,10 @@
         )); ?>
     </div>
     <?php echo form_error('alamat'); ?>
-    <div class="col-md-9 col-md-offset-2">
+    <div class="col-md-9 col-md-offset-1">
         <?php echo form_label('No Telepon :'); ?>
     </div>
-    <div class="col-md-3 col-md-offset-2">
+    <div class="col-md-3 col-md-offset-1">
         <?php echo form_input(array(
             'id'    => 'no_telepon',
             'name'  => 'no_telepon',
@@ -230,33 +237,33 @@
         )); ?>
     </div>
     <?php echo form_error('no_telepon'); ?>
-    <div class="col-md-9 col-md-offset-2">
+    <div class="col-md-9 col-md-offset-1">
         <?php echo form_label('Jenis Kelamin :', 'jenis_kelamin'); ?>
     </div>
-    <div class="col-md-3 col-md-offset-2">
+    <div class="col-md-3 col-md-offset-1">
         <div class="btn-group" data-toggle="buttons">
             <label class="btn btn-gender-man <?= ($u->jenis_kelamin == 1) ? "active" : "" ?>">
                 <input type="radio" name="jenis_kelamin" id="jenis_kelamin" autocomplete="off"
-                       value="1" <?= set_radio('jenis_kelamin', '1', $u->jenis_kelamin == 1) ?>>Laki-laki
+                       value="1"  <?= set_radio('jenis_kelamin', '1', $u->jenis_kelamin == 1)?>>Laki-laki
             </label>
             <label class="btn btn-gender-girl <?= ($u->jenis_kelamin == 2) ? "active" : "" ?>">
                 <input type="radio" name="jenis_kelamin" id="jenis_kelamin" autocomplete="off"
-                       value="2" <?= set_radio('jenis_kelamin', '2', $u->jenis_kelamin == 2) ?>>Perempuan
+                       value="2" <?= set_radio('jenis_kelamin', '2', $u->jenis_kelamin == 2)?> >Perempuan
             </label>
         </div>
     </div>
-    <div class="col-md-9 col-md-offset-2">
+    <div class="col-md-9 col-md-offset-1">
         <?php echo form_label('Tanggal Lahir :', 'tgl_lahir'); ?>
     </div>
-    <div class="col-md-3 col-md-offset-2">
+    <div class="col-md-3 col-md-offset-1">
         <input type="date" name=tgl_lahir id="tgl_lahir" class="form-control"
                value="<?= set_value('tgl_lahir', $u->tgl_lahir) ?>"/>
     </div>
     <?php echo form_error('tgl_lahir'); ?>
-    <div class="col-md-9 col-md-offset-2">
+    <div class="col-md-9 col-md-offset-1">
         <?php echo form_label('Provinsi :', 'provinsi'); ?>
     </div>
-    <div class="col-md-4 col-md-offset-2">
+    <div class="col-md-4 col-md-offset-1">
         <select id="provinsi" name="provinsi" class="form-control">
             <?php foreach ($provinsiDrop as $key => $value): ?>
                 <option value="<?= $key ?>" <?= set_select('provinsi', $key, $u->id_provinsi == $key) ?>>
@@ -266,10 +273,10 @@
         </select>
     </div>
     <?php echo form_error('provinsi'); ?>
-    <div class="col-md-9 col-md-offset-2">
+    <div class="col-md-9 col-md-offset-1">
         <?php echo form_label('Kota :', 'kota'); ?>
     </div>
-    <div class="col-md-5 col-md-offset-2">
+    <div class="col-md-5 col-md-offset-1">
         <select id="kota" name="kota" class="form-control">
             <?php foreach ($kotaDrop as $key => $value): ?>
                 <option value="<?= $key ?>" <?= set_select('kota', $key, $u->id_kota == $key) ?>>
@@ -277,15 +284,30 @@
                 </option>
             <?php endforeach; ?>
         </select>
-        <br>
-        <br>
     </div>
     <?php echo form_error('kota'); ?>
+        <div class="col-md-9 col-md-offset-1">
+            <?php echo form_label('Status :', 'status'); ?>
+        </div>
+        <div class="col-md-5 col-md-offset-1">
+            <select id="status" name="status" class="form-control">
+                    <option value="0" <?= set_select('status', '0', $u->status_user == 0) ?>>Not Active</option>
+                    <option value="1" <?= set_select('status', '1', $u->status_user == 1) ?>>Active</option>
+                    <option value="2" <?= set_select('status', '2', $u->status_user == 2) ?>>Banned</option>
+            </select>
+
+            <br>
+            <br>
+        </div>
     <div class="modal-footer col-md-10 col-md-offset-1">
         <?php echo form_submit(array('id' => 'save', 'name' => 'save', 'value' => 'Save', 'class' => 'btn btn-ok')); ?>
     </div>
     <?php endforeach; ?>
     <?php echo form_close(); ?>
+
+
+
+    <br>
 
 </div>
 
@@ -316,13 +338,6 @@
     $('.carousel').carousel({
         interval: 5000
     })
-
-
-    $('input').focus(function () {
-        $(this).prev().addClass('active');
-    }).blur(function () {
-        $(this).prev().removeClass('active');
-    });
 </script>
 </body>
 </html>
