@@ -107,6 +107,7 @@ class Admin extends CI_Controller
 
             $id_provinsi = $this->session->userdata('id_provinsi');
             $this->admin_model->update_admin($id_user, $data);
+            $this->session->set_flashdata('category_success', 'Success update admin.');
             redirect('/admin/ubah_akun/' . $id_user, $data, true);
         }
 
@@ -184,6 +185,7 @@ class Admin extends CI_Controller
 
             $this->db->insert('barang', $data);
             $data['barang'] = $this->barang_model->show_barang();
+            $this->session->set_flashdata('category_success', 'Success add barang.');
             redirect('/admin/manage_barang', $data, true);
 
 
@@ -253,6 +255,7 @@ class Admin extends CI_Controller
 
             $this->db->insert('user', $data);
             $data['supplier'] = $this->admin_model->show_supplier();
+            $this->session->set_flashdata('category_success', 'Success add supplier.');
             redirect('/admin/manage_supplier', $data, true);
         }
 
@@ -331,6 +334,7 @@ class Admin extends CI_Controller
             $this->admin_model->update_admin($data['id_user'], $data);
 
 //            $data['pegawai'] = $this->admin_model->show_pegawai();
+            $this->session->set_flashdata('category_success', 'Success update supplier.');
             redirect('/admin/manage_supplier', $data, true);
         }
 
@@ -341,6 +345,7 @@ class Admin extends CI_Controller
 
         $id = $this->uri->segment(3);
         $this->admin_model->delete($id);
+        $this->session->set_flashdata('category_success', 'Success delete supplier.');
         redirect('/admin/manage_supplier', [], 'refresh');
     }
 
@@ -407,6 +412,7 @@ class Admin extends CI_Controller
 
             $this->db->insert('user', $data);
             $data['seller'] = $this->admin_model->show_seller();
+            $this->session->set_flashdata('category_success', 'Success add seller.');
             redirect('/admin/manage_seller', $data, true);
         }
 
@@ -485,6 +491,7 @@ class Admin extends CI_Controller
             $this->admin_model->update_admin($data['id_user'], $data);
 
 //            $data['pegawai'] = $this->admin_model->show_pegawai();
+            $this->session->set_flashdata('category_success', 'Success update seller.');
             redirect('/admin/manage_seller', $data, true);
         }
 
@@ -495,6 +502,7 @@ class Admin extends CI_Controller
 
         $id = $this->uri->segment(3);
         $this->admin_model->delete($id);
+        $this->session->set_flashdata('category_success', 'Success delete seller.');
         redirect('/admin/manage_seller', [], 'refresh');
     }
 
@@ -561,6 +569,7 @@ class Admin extends CI_Controller
 
             $this->db->insert('user', $data);
             $data['customer'] = $this->admin_model->show_customer();
+            $this->session->set_flashdata('category_success', 'Success add customer.');
             redirect('/admin/manage_customer', $data, true);
         }
 
@@ -639,6 +648,7 @@ class Admin extends CI_Controller
             $this->admin_model->update_admin($data['id_user'], $data);
 
 //            $data['pegawai'] = $this->admin_model->show_pegawai();
+            $this->session->set_flashdata('category_success', 'Success update customer.');
             redirect('/admin/manage_customer', $data, true);
         }
 
@@ -649,6 +659,7 @@ class Admin extends CI_Controller
 
         $id = $this->uri->segment(3);
         $this->admin_model->delete($id);
+        $this->session->set_flashdata('category_success', 'Success delete customer.');
         redirect('/admin/manage_customer', [], 'refresh');
     }
 
@@ -716,6 +727,7 @@ class Admin extends CI_Controller
 
             $this->db->insert('user', $data);
             $data['pegawai'] = $this->admin_model->show_pegawai();
+            $this->session->set_flashdata('category_success', 'Success add pegawai.');
             redirect('/admin/manage_pegawai', $data, true);
         }
 
@@ -794,6 +806,7 @@ class Admin extends CI_Controller
             $this->admin_model->update_admin($data['id_user'], $data);
 
 //            $data['pegawai'] = $this->admin_model->show_pegawai();
+            $this->session->set_flashdata('category_success', 'Success update pegawai.');
             redirect('/admin/manage_pegawai', $data, true);
         }
 
@@ -804,6 +817,7 @@ class Admin extends CI_Controller
 
         $id = $this->uri->segment(3);
         $this->admin_model->delete($id);
+        $this->session->set_flashdata('category_success', 'Success delete pegawai.');
         redirect('/admin/manage_pegawai', [], 'refresh');
     }
 

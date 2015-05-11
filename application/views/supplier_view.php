@@ -2,6 +2,7 @@
 $kategori = $this->session->userdata('id_kategori_user');
 if($kategori == 4){
     if($logged_in_supplier) {
+        $id_user = $this->session->userdata('id_user');
         $username = $this->session->userdata('username');
 
 
@@ -67,13 +68,13 @@ if($kategori == 4){
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="#">Home</a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">=Nama User=<span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="#">Ubah Akun</a></li>
-                        <li><a href="#">Manage Refund</a></li>
-                        <li><a href="#">History Penjualan</a></li>
+                        <li><a href="<?= base_url() ?>index.php/supplier/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a></li>
+                        <li><a href="<?= base_url() ?>index.php/supplier/manage_refund/">Manage Refund</a></li>
+                        <li><a href="<?= base_url() ?>index.php/supplier/history_penjualan/">History Penjualan</a></li>
                         <li class="divider"></li>
-                        <li><a href="#">Logout</a></li>
+                        <li><a href="<?= base_url() ?>index.php/supplier/logout/">Logout</a></li>
                     </ul>
                 </li>
                 <li><a href="#">Tentang Kami</a></li>

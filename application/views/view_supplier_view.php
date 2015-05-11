@@ -1,5 +1,5 @@
 <?php
-$id_user = $this->session->userdata('id_user');
+$id_user  = $this->session->userdata('id_user');
 $username = $this->session->userdata('username');
 ?>
 <!DOCTYPE html>
@@ -23,7 +23,7 @@ $username = $this->session->userdata('username');
 
 </head>
 <body class="cover">
-
+<?php foreach ($pilot->result() as $pil): ?>
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -40,24 +40,50 @@ $username = $this->session->userdata('username');
                 <button type="submit" class="btn btn-default">Cari</button>
             </form>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="<?= base_url() ?>index.php/admin">Home</a></li>
+                <?php if ($pil->id_kategori_user == 1): ?>
+                    <li><a href="<?= base_url() ?>index.php/admin">Home</a></li>
+                <?php endif; ?>
+
+                <?php if ($pil->id_kategori_user == 2): ?>
+                    <li><a href="<?= base_url() ?>index.php/pegawai">Home</a></li>
+                <?php endif; ?>
+
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a>
-                        </li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_barang">Manage Barang</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_refund">Manage Refund</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_supplier">Manage Supplier</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_seller">Manage Seller</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_customer">Manage Customer</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_pegawai">Manage Pegawai</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/pembelian">Pembelian</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Penjualan</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Pembelian</a></li>
-                        <li class="divider"></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/logout">Logout</a></li>
+                        <?php if ($pil->id_kategori_user == 1): ?>
+
+                            <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah
+                                    Akun</a>
+                            </li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_barang">Manage Barang</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_refund">Manage Refund</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_supplier">Manage Supplier</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_seller">Manage Seller</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_customer">Manage Customer</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_pegawai">Manage Pegawai</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/pembelian">Pembelian</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Penjualan</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Pembelian</a></li>
+                            <li class="divider"></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/logout">Logout</a></li>
+
+                        <?php endif; ?>
+
+                        <?php if ($pil->id_kategori_user == 2): ?>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/ubah_akun/<?php echo $id_user; ?>">Ubah
+                                    Akun</a></li>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/manage_pembayaran/">Manage Pembayaran</a>
+                            </li>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/manage_refund/">Manage Refund</a></li>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/manage_supplier/">Manage Supplier</a></li>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/manage_seller/">Manage Seller</a></li>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/manage_customer/">Manage Customer</a></li>
+                            <li class="divider"></li>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/logout">Logout</a></li>
+                        <?php endif; ?>
                     </ul>
                 </li>
                 <li><a href="#">Tentang Kami</a></li>
@@ -125,95 +151,105 @@ $username = $this->session->userdata('username');
 
     <?php foreach ($user->result() as $u): ?>
 
-        <?php echo form_open('admin/manage_supplier/'); ?>
+        <?php if ($pil->id_kategori_user == 1): ?>
+            <?php echo form_open('admin/manage_supplier'); ?>
 
+        <?php endif; ?>
+        <?php if ($pil->id_kategori_user == 2): ?>
+            <?php echo form_open('pegawai/manage_supplier'); ?>
 
-        <br>
-        <div class="col-md-2 col-md-offset-1">
-            <?php echo form_label('Username :'); ?>
-        </div>
-        <div class="col-md-0 col-md-offset-1">
-            <?php echo form_label(set_value('username', $u->username))?>
-        </div>
-        <div class="col-md-2 col-md-offset-1">
-            <?php echo form_label('Email :'); ?>
-        </div>
-        <div class="col-md-0 col-md-offset-1">
-            <?php echo form_label(set_value('email', $u->email))?>
-        </div>
-        <div class="col-md-2 col-md-offset-1">
-            <?php echo form_label('Nama Lengkap :'); ?>
-        </div>
-        <div class="col-md-0 col-md-offset-1">
-            <?php echo form_label(set_value('nama_user', $u->nama_user))?>
-        </div>
-        <div class="col-md-2 col-md-offset-1">
-            <?php echo form_label('Nama Perusahaan :'); ?>
-        </div>
-        <div class="col-md-0 col-md-offset-1">
-            <?php echo form_label(set_value('nama_perusahaan', $u->nama_perusahaan))?>
-        </div>
-        <div class="col-md-2 col-md-offset-1">
-            <?php echo form_label('Alamat :'); ?>
-        </div>
-        <div class="col-md-0 col-md-offset-1">
-            <?php echo form_label(set_value('alamat', $u->alamat))?>
-        </div>
-        <div class="col-md-2 col-md-offset-1">
-            <?php echo form_label('No Telepon :'); ?>
-        </div>
-        <div class="col-md-0 col-md-offset-1">
-            <?php echo form_label(set_value('no_telepon', $u->no_telepon))?>
-        </div>
-        <div class="col-md-2 col-md-offset-1">
-            <?php echo form_label('Jenis Kelamin :', 'jenis_kelamin'); ?>
-        </div>
-        <div class="col-md-0 col-md-offset-1">
-            <?php echo form_label(set_value('jenis_kelamin', ($u->jenis_kelamin == 1) ? "Laki-laki" : "Perempuan"))?>
-        </div>
-        <div class="col-md-2 col-md-offset-1">
-            <?php echo form_label('Tanggal Lahir :', 'tgl_lahir'); ?>
-        </div>
-        <div class="col-md-0 col-md-offset-1">
-            <?php
-            $originalDate = $u->tgl_lahir;
-            $newDate = date("d - M - Y", strtotime($originalDate));
-            ?>
-            <?php echo form_label(set_value('tgl_lahir', $newDate))?>
-        </div>
-        <div class="col-md-2 col-md-offset-1">
-            <?php echo form_label('Provinsi :', 'provinsi'); ?>
-        </div>
-        <div class="col-md-0 col-md-offset-1">
-            <?php echo form_label(set_value('provinsi', $u->nama_provinsi))?>
-        </div>
-        <div class="col-md-2 col-md-offset-1">
-            <?php echo form_label('Kota :', 'kota'); ?>
-        </div>
-        <div class="col-md-0 col-md-offset-1">
-            <?php echo form_label(set_value('kota', $u->nama_kota))?>
-        </div>
-        <div class="col-md-2 col-md-offset-1">
-            <?php echo form_label('Status :', 'status'); ?>
-        </div>
-        <div class="col-md-0 col-md-offset-1">
-            <?php
-            $s = $u->status_user;
-            if($s == 0){
-                $s = 'Not Active';
-            }else if($s == 1){
+        <?php endif; ?>
+    <?php endforeach; ?>
+
+    <br>
+
+    <div class="col-md-2 col-md-offset-1">
+        <?php echo form_label('Username :'); ?>
+    </div>
+    <div class="col-md-0 col-md-offset-1">
+        <?php echo form_label(set_value('username', $u->username)) ?>
+    </div>
+    <div class="col-md-2 col-md-offset-1">
+        <?php echo form_label('Email :'); ?>
+    </div>
+    <div class="col-md-0 col-md-offset-1">
+        <?php echo form_label(set_value('email', $u->email)) ?>
+    </div>
+    <div class="col-md-2 col-md-offset-1">
+        <?php echo form_label('Nama Lengkap :'); ?>
+    </div>
+    <div class="col-md-0 col-md-offset-1">
+        <?php echo form_label(set_value('nama_user', $u->nama_user)) ?>
+    </div>
+    <div class="col-md-2 col-md-offset-1">
+        <?php echo form_label('Nama Perusahaan :'); ?>
+    </div>
+    <div class="col-md-0 col-md-offset-1">
+        <?php echo form_label(set_value('nama_perusahaan', $u->nama_perusahaan)) ?>
+    </div>
+    <div class="col-md-2 col-md-offset-1">
+        <?php echo form_label('Alamat :'); ?>
+    </div>
+    <div class="col-md-0 col-md-offset-1">
+        <?php echo form_label(set_value('alamat', $u->alamat)) ?>
+    </div>
+    <div class="col-md-2 col-md-offset-1">
+        <?php echo form_label('No Telepon :'); ?>
+    </div>
+    <div class="col-md-0 col-md-offset-1">
+        <?php echo form_label(set_value('no_telepon', $u->no_telepon)) ?>
+    </div>
+    <div class="col-md-2 col-md-offset-1">
+        <?php echo form_label('Jenis Kelamin :', 'jenis_kelamin'); ?>
+    </div>
+    <div class="col-md-0 col-md-offset-1">
+        <?php echo form_label(set_value('jenis_kelamin', ($u->jenis_kelamin == 1) ? "Laki-laki" : "Perempuan")) ?>
+    </div>
+    <div class="col-md-2 col-md-offset-1">
+        <?php echo form_label('Tanggal Lahir :', 'tgl_lahir'); ?>
+    </div>
+    <div class="col-md-0 col-md-offset-1">
+        <?php
+        $originalDate = $u->tgl_lahir;
+        $newDate      = date("d - M - Y", strtotime($originalDate));
+        ?>
+        <?php echo form_label(set_value('tgl_lahir', $newDate)) ?>
+    </div>
+    <div class="col-md-2 col-md-offset-1">
+        <?php echo form_label('Provinsi :', 'provinsi'); ?>
+    </div>
+    <div class="col-md-0 col-md-offset-1">
+        <?php echo form_label(set_value('provinsi', $u->nama_provinsi)) ?>
+    </div>
+    <div class="col-md-2 col-md-offset-1">
+        <?php echo form_label('Kota :', 'kota'); ?>
+    </div>
+    <div class="col-md-0 col-md-offset-1">
+        <?php echo form_label(set_value('kota', $u->nama_kota)) ?>
+    </div>
+    <div class="col-md-2 col-md-offset-1">
+        <?php echo form_label('Status :', 'status'); ?>
+    </div>
+    <div class="col-md-0 col-md-offset-1">
+        <?php
+        $s = $u->status_user;
+        if ($s == 0) {
+            $s = 'Not Active';
+        } else {
+            if ($s == 1) {
                 $s = 'Active';
-            }else{
+            } else {
                 $s = 'Banned';
             }
-            ?>
-            <?php echo form_label(set_value('status', $s))?>
-            <br>
-            <br>
-        </div>
-        <div class="modal-footer col-md-10 col-md-offset-1">
-            <?php echo form_submit(array('id' => 'back', 'name' => 'back', 'value' => 'Back', 'class' => 'btn btn-ok')); ?>
-        </div>
+        }
+        ?>
+        <?php echo form_label(set_value('status', $s)) ?>
+        <br>
+        <br>
+    </div>
+    <div class="modal-footer col-md-10 col-md-offset-1">
+        <?php echo form_submit(array('id' => 'back', 'name' => 'back', 'value' => 'Back', 'class' => 'btn btn-ok')); ?>
+    </div>
     <?php endforeach; ?>
     <?php echo form_close(); ?>
 

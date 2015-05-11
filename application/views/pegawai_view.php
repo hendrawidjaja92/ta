@@ -1,9 +1,16 @@
 <?php
+
 $kategori = $this->session->userdata('id_kategori_user');
 if($kategori == 2){
     if($logged_in_pegawai) {
+        $id_user = $this->session->userdata('id_user');
         $username = $this->session->userdata('username');
+        $id_kota = $this->session->userdata('id_kota');
+        $id_provinsi = $this->session->userdata('id_provinsi');
+        $tgl_lahir = $this->session->userdata('tgl_lahir');
 
+    }else{
+        redirect('/', 'location');
     }
 }else{
     switch($kategori){
@@ -68,14 +75,14 @@ if($kategori == 2){
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="#">Ubah Akun</a></li>
-                        <li><a href="#">Manage Pembayaran</a></li>
-                        <li><a href="#">Manage Refund</a></li>
-                        <li><a href="#">Manage Supplier</a></li>
-                        <li><a href="#">Manage Seller</a></li>
-                        <li><a href="#">Manage Customer</a></li>
+                        <li><a href="<?= base_url() ?>index.php/pegawai/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a></li>
+                        <li><a href="<?= base_url() ?>index.php/pegawai/manage_pembayaran/">Manage Pembayaran</a></li>
+                        <li><a href="<?= base_url() ?>index.php/pegawai/manage_refund/">Manage Refund</a></li>
+                        <li><a href="<?= base_url() ?>index.php/pegawai/manage_supplier/">Manage Supplier</a></li>
+                        <li><a href="<?= base_url() ?>index.php/pegawai/manage_seller/">Manage Seller</a></li>
+                        <li><a href="<?= base_url() ?>index.php/pegawai/manage_customer/">Manage Customer</a></li>
                         <li class="divider"></li>
-                        <li><a href="#">Logout</a></li>
+                        <li><a href="<?= base_url() ?>index.php/pegawai/logout">Logout</a></li>
                     </ul>
                 </li>
                 <li><a href="#">Tentang Kami</a></li>

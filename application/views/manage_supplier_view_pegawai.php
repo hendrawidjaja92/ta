@@ -40,25 +40,19 @@ $username = $this->session->userdata('username');
                 <button type="submit" class="btn btn-default">Cari</button>
             </form>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="<?= base_url() ?>index.php/admin">Home</a></li>
+                <li><a href="<?= base_url() ?>index.php/pegawai">Home</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                        aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a>
-                        </li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_barang">Manage Barang</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_refund">Manage Refund</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_supplier">Manage Supplier</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_seller">Manage Seller</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_customer">Manage Customer</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_pegawai">Manage Pegawai</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/pembelian">Pembelian</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Penjualan</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Pembelian</a></li>
+                        <li><a href="<?= base_url() ?>index.php/pegawai/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a></li>
+                        <li><a href="<?= base_url() ?>index.php/pegawai/manage_pembayaran/">Manage Pembayaran</a></li>
+                        <li><a href="<?= base_url() ?>index.php/pegawai/manage_refund/">Manage Refund</a></li>
+                        <li><a href="<?= base_url() ?>index.php/pegawai/manage_supplier/">Manage Supplier</a></li>
+                        <li><a href="<?= base_url() ?>index.php/pegawai/manage_seller/">Manage Seller</a></li>
+                        <li><a href="<?= base_url() ?>index.php/pegawai/manage_customer/">Manage Customer</a></li>
                         <li class="divider"></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/logout">Logout</a></li>
+                        <li><a href="<?= base_url() ?>index.php/pegawai/logout">Logout</a></li>
                     </ul>
                 </li>
                 <li><a href="#">Tentang Kami</a></li>
@@ -120,10 +114,10 @@ $username = $this->session->userdata('username');
      data-example-id="carousel-with-captions">
     <ul class="list-group judul-1">
         <li class="list-group-item judul-1">
-            <h3>Manage Barang</h3>
+            <h3>Manage Supplier</h3>
         </li>
     </ul>
-    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/add_barang">ADD <span
+    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/pegawai/add_supplier">ADD <span
                 class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
     <?php if ($this->session->flashdata('category_success')) { ?>
         <div class="alert alert-success"> <?= $this->session->flashdata('category_success') ?> </div>
@@ -132,12 +126,12 @@ $username = $this->session->userdata('username');
 
         <tr style="background-color: black; color: white">
             <th>#</th>
-            <th>Gambar Barang</th>
-            <th>Nama Barang</th>
-            <th>Merk</th>
-            <th>Kategori Barang</th>
-            <th>Stok</th>
-            <th>Harga Jual</th>
+            <th>Nama</th>
+            <th>Email</th>
+            <th>Nama Perusahaan</th>
+            <th>Alamat</th>
+            <th>No Telepon</th>
+            <th>Jenis Kelamin</th>
             <th>View</th>
             <th>Edit</th>
             <th>Delete</th>
@@ -145,26 +139,26 @@ $username = $this->session->userdata('username');
         </tr>
         <?php $i = 1; ?>
 
-        <?php if ($barang->result()) { ?>
+        <?php if ($supplier->result()) { ?>
 
-            <?php foreach ($barang->result() as $b): ?>
+            <?php foreach ($supplier->result() as $s): ?>
 
 
-                <?php $data[$i] = $b->id_barang ?>
+                <?php $data[$i] = $s->id_user ?>
                 <tr
-                    class="<?= ($b->status_barang == 1) ? "alert-success" : "" ?> <?= ($b->status_barang == 2) ? "alert-danger" : "" ?>">
+                    class="<?= ($s->status_user == 1) ? "alert-success" : "" ?> <?= ($s->status_user == 2) ? "alert-danger" : "" ?>">
                     <td><?= $i ?></td>
-                    <td><?= $b->gambar_barang ?></td>
-                    <td><?= $b->nama_barang ?></td>
-                    <td><?= $b->merk_barang ?></td>
-                    <td><?= $b->nama_kategori_barang ?></td>
-                    <td><?= $b->jumlah ?></td>
-                    <td><?= $b->harga_jual ?></td>
-                    <td><a href="<?= base_url() ?>index.php/admin/view_barang/<?= $b->id_barang ?>"
+                    <td><?= $s->nama_user ?></td>
+                    <td><?= $s->email ?></td>
+                    <td><?= $s->nama_perusahaan ?></td>
+                    <td><?= $s->alamat ?></td>
+                    <td><?= $s->no_telepon ?></td>
+                    <td><?= ($s->jenis_kelamin == 1) ? "Laki-laki" : "Perempuan" ?></td>
+                    <td><a href="<?= base_url() ?>index.php/pegawai/view_supplier/<?= $s->id_user ?>"
                            class="glyphicon glyphicon-user" aria-hidden="true"> VIEW</a></td>
-                    <td><a href="<?= base_url() ?>index.php/admin/edit_barang/<?= $b->id_barang ?>"
+                    <td><a href="<?= base_url() ?>index.php/pegawai/edit_supplier/<?= $s->id_user ?>"
                            class="glyphicon glyphicon-cog" aria-hidden="true"> EDIT</a></td>
-                    <td><a href="#" onclick="confDelete(<?= $b->id_barang ?>)"
+                    <td><a href="#" onclick="confDelete(<?= $s->id_user ?>)"
                            class="glyphicon glyphicon-remove" aria-hidden="true">
                             DELETE</a></td>
                     <?php $i += 1; ?>
@@ -181,7 +175,7 @@ $username = $this->session->userdata('username');
 
 
     </table>
-    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/add_barang">ADD <span
+    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/pegawai/add_supplier">ADD <span
                 class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
     <br>
 
@@ -213,9 +207,9 @@ $username = $this->session->userdata('username');
     });
 
     function confDelete(id) {
-        var confimation = window.confirm("Are you sure want to delete this barang");
+        var confimation = window.confirm("Are you sure want to delete this supplier");
         if (confimation) {
-            window.location = "<?= base_url() ?>index.php/admin/delete_barang/" + id;
+            window.location = "<?= base_url() ?>index.php/pegawai/delete_supplier/" + id;
         }
     }
 

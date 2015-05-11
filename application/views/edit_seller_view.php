@@ -23,7 +23,7 @@ $username = $this->session->userdata('username');
 
 </head>
 <body class="cover">
-
+<?php foreach ($pilot->result() as $pil): ?>
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -40,25 +40,50 @@ $username = $this->session->userdata('username');
                 <button type="submit" class="btn btn-default">Cari</button>
             </form>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="<?= base_url() ?>index.php/admin">Home</a></li>
+                <?php if ($pil->id_kategori_user == 1): ?>
+                    <li><a href="<?= base_url() ?>index.php/admin">Home</a></li>
+                <?php endif; ?>
+
+                <?php if ($pil->id_kategori_user == 2): ?>
+                    <li><a href="<?= base_url() ?>index.php/pegawai">Home</a></li>
+                <?php endif; ?>
+
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                        aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a>
-                        </li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_barang">Manage Barang</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_refund">Manage Refund</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_supplier">Manage Supplier</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_seller">Manage Seller</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_customer">Manage Customer</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_pegawai">Manage Pegawai</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/pembelian">Pembelian</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Penjualan</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Pembelian</a></li>
-                        <li class="divider"></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/logout">Logout</a></li>
+                        <?php if ($pil->id_kategori_user == 1): ?>
+
+                            <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah
+                                    Akun</a>
+                            </li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_barang">Manage Barang</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_refund">Manage Refund</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_supplier">Manage Supplier</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_seller">Manage Seller</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_customer">Manage Customer</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_pegawai">Manage Pegawai</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/pembelian">Pembelian</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Penjualan</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Pembelian</a></li>
+                            <li class="divider"></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/logout">Logout</a></li>
+
+                        <?php endif; ?>
+
+                        <?php if ($pil->id_kategori_user == 2): ?>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/ubah_akun/<?php echo $id_user; ?>">Ubah
+                                    Akun</a></li>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/manage_pembayaran/">Manage Pembayaran</a>
+                            </li>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/manage_refund/">Manage Refund</a></li>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/manage_supplier/">Manage Supplier</a></li>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/manage_seller/">Manage Seller</a></li>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/manage_customer/">Manage Customer</a></li>
+                            <li class="divider"></li>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/logout">Logout</a></li>
+                        <?php endif; ?>
                     </ul>
                 </li>
                 <li><a href="#">Tentang Kami</a></li>
@@ -126,8 +151,15 @@ $username = $this->session->userdata('username');
 
 <?php foreach ($user->result() as $u): ?>
 
-    <?php echo form_open('admin/edit_seller/' . $u->id_user); ?>
+    <?php if ($pil->id_kategori_user == 1): ?>
+        <?php echo form_open('admin/edit_seller/' . $u->id_user); ?>
 
+    <?php endif; ?>
+    <?php if ($pil->id_kategori_user == 2): ?>
+        <?php echo form_open('pegawai/edit_seller/' . $u->id_user); ?>
+
+    <?php endif; ?>
+<?php endforeach; ?>
 
     <br>
     <div class="col-md-9 col-md-offset-1">

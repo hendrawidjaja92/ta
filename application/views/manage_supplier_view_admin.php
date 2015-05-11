@@ -125,7 +125,9 @@ $username = $this->session->userdata('username');
     </ul>
     <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/add_supplier">ADD <span
                 class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
-
+    <?php if ($this->session->flashdata('category_success')) { ?>
+        <div class="alert alert-success"> <?= $this->session->flashdata('category_success') ?> </div>
+    <?php } ?>
     <table class="table table-hover">
 
         <tr style="background-color: black; color: white">

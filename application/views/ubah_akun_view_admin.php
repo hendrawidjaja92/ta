@@ -138,7 +138,9 @@
         </li>
     </ul>
     <br>
-
+    <?php if ($this->session->flashdata('category_success')) { ?>
+        <div class="alert alert-success"> <?= $this->session->flashdata('category_success') ?> </div>
+    <?php } ?>
     <div class="col-md-9 col-md-offset-2">
         <?php echo form_label('Email :'); ?>
     </div>
@@ -155,7 +157,7 @@
             'id'    => 'email',
             'name'  => 'email',
             'class' => 'form-control',
-            'value' => $u->email
+            'value' => set_value('username', $u->email)
         )); ?>
     </div>
     <?php echo form_error('email'); ?>

@@ -2,6 +2,7 @@
 $kategori = $this->session->userdata('id_kategori_user');
 if($kategori == 5){
     if($logged_in_customer) {
+        $id_user = $this->session->userdata('id_user');
         $username = $this->session->userdata('username');
 
 
@@ -67,15 +68,15 @@ if($kategori == 5){
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="#">Home</a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">=Nama User=<span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="#">Ubah Akun</a></li>
-                        <li><a href="#">Pesanan Saya</a></li>
-                        <li><a href="#">Wishlist</a></li>
-                        <li><a href="#">Refund</a></li>
-                        <li><a href="#">History Belanja</a></li>
+                        <li><a href="<?= base_url() ?>index.php/customer/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a></li>
+                        <li><a href="<?= base_url() ?>index.php/customer/pesanan_saya/">Pesanan Saya</a></li>
+                        <li><a href="<?= base_url() ?>index.php/customer/wishlist/">Wishlist</a></li>
+                        <li><a href="<?= base_url() ?>index.php/customer/refund/">Refund</a></li>
+                        <li><a href="<?= base_url() ?>index.php/customer/history_belanja/">History Belanja</a></li>
                         <li class="divider"></li>
-                        <li><a href="#">Logout</a></li>
+                        <li><a href="<?= base_url() ?>index.php/customer/logout/">Logout</a></li>
                     </ul>
                 </li>
                 <li><a href="#">Tentang Kami</a></li>
