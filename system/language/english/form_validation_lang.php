@@ -91,3 +91,9 @@ $lang['form_validation_kota_check']		= '<div class="col-md-4 col-md-offset-0 ale
 $lang['form_validation_kategori_check']		= '<div class="col-md-4 col-md-offset-0 alert alert-danger" role="alert">
                                         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                                         <span class="sr-only">Error:</span>Enter the %s is wrong</div>';
+$lang['form_validation_not_minus']		= '<div class="col-md-4 col-md-offset-0 alert alert-danger" role="alert">
+                                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                        <span class="sr-only">Error:</span>%s value not minus</div>';
+$lang['form_validation_select_check']		= '<div class="col-md-4 col-md-offset-0 alert alert-danger" role="alert">
+                                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                        <span class="sr-only">Error:</span>Enter the %s is wrong</div>';

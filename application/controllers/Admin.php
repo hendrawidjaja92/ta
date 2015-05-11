@@ -23,6 +23,7 @@ class Admin extends CI_Controller
         $this->load->model('kota_provinsi_model');
         $this->load->model('admin_model');
         $this->load->model('login_model');
+        $this->load->model('barang_model');
     }
 
     function index()
@@ -66,8 +67,8 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('jenis_kelamin', 'Jenis Kelamin', 'required|trim|xss_clean');
         $this->form_validation->set_rules('tgl_lahir', 'Tanggal Lahir',
             'required|trim|callback_birth_date_check|xss_clean');
-        $this->form_validation->set_rules('provinsi', 'Provinsi', 'required|callback_provinsi_check|trim|xss_clean');
-        $this->form_validation->set_rules('kota', 'Kota', 'required|callback_kota_check|trim|xss_clean');
+        $this->form_validation->set_rules('provinsi', 'Provinsi', 'required|callback_select_check|trim|xss_clean');
+        $this->form_validation->set_rules('kota', 'Kota', 'required|callback_select_check|trim|xss_clean');
 
         if ($this->form_validation->run() == false) {
 //            $id_provinsi          = $this->session->userdata('id_provinsi');
@@ -119,9 +120,75 @@ class Admin extends CI_Controller
 
     function manage_barang()
     {
-        $id_user      = $this->session->userdata('id_user');
-        $data['user'] = $this->admin_model->show($id_user);
+        $data['barang'] = $this->barang_model->show_barang();
         $this->load->view('manage_barang_view_admin', $data);
+    }
+
+    function add_barang()
+    {
+        $this->form_validation->set_rules('gambar_barang', 'Gambar Barang', 'required|trim|xss_clean');
+
+        $this->form_validation->set_rules('nama_barang', 'Nama Barang', 'required|trim|xss_clean');
+        $this->form_validation->set_rules('harga_beli', 'Harga Beli',
+            'required|trim|callback_not_minus|numeric|xss_clean');
+        $this->form_validation->set_rules('harga_jual', 'Harga Jual',
+            'required|trim|callback_not_minus|numeric|xss_clean');
+        $this->form_validation->set_rules('jumlah', 'Stok', 'required|trim|callback_not_minus|numeric|xss_clean');
+        $this->form_validation->set_rules('merk_barang', 'Merk', 'required|trim|xss_clean');
+        $this->form_validation->set_rules('satuan_berat', 'Satuan Berat', 'required|trim|alpha|xss_clean');
+        $this->form_validation->set_rules('nilai_berat', 'Nilai Berat', 'required|trim|numeric|xss_clean');
+        $this->form_validation->set_rules('kategori_barang', 'Kategori Barang',
+            'required|trim|callback_select_check|xss_clean');
+
+        if ($this->form_validation->run() == false) {
+            $data['kategoriBarang'] = $this->barang_model->show_kategori_barang();
+            $this->load->view('add_barang_view', $data);
+        } else {
+            $data = array(
+                'gambar_barang'      => $this->input->post('gambar_barang'),
+                'nama_barang'        => $this->input->post('nama_barang'),
+                'harga_beli'         => $this->input->post('harga_beli'),
+                'harga_jual'         => $this->input->post('harga_jual'),
+                'jumlah'             => $this->input->post('jumlah'),
+                'merk_barang'        => $this->input->post('merk_barang'),
+                'satuan_berat'       => $this->input->post('satuan_berat'),
+                'nilai_berat'        => $this->input->post('nilai_berat'),
+                'id_kategori_barang' => $this->input->post('kategori_barang'),
+                'status_barang'      => 1,
+            );
+
+
+            $config['upload_path']   = './upload_image/';
+            $config['allowed_types'] = 'jpeg|jpg|gif|png';
+            $config['max_size']      = '1024';
+            $config['max_width']     = '2024';
+            $config['max_height']    = '1468';
+            $this->load->library('upload', $config);
+
+            $this->upload->do_upload();
+
+            $img['upload_data'] = $this->upload->do_upload();
+
+            $config_resize = [
+                'source_image'    => $img['upload_data']['full_path'],
+                'new_image'       => './thumb/',
+                'maintain_ration' => true,
+                'width'           => 160,
+                'height'          => 120
+            ];
+
+            $$this->config->library('image_lib', $config_resize);
+            $img['images'] = $this->barang_model->fetch_image(FCPATH . 'gambar_barang');
+
+
+
+            $this->db->insert('barang', $data);
+            $data['barang'] = $this->barang_model->show_barang();
+            redirect('/admin/manage_barang', $data, true);
+
+
+        }
+
     }
 
     function manage_refund()
@@ -155,8 +222,8 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('tgl_lahir', 'Tanggal Lahir',
             'required|trim|callback_birth_date_check|xss_clean');
         $this->form_validation->set_rules('provinsi', 'Provinsi',
-            'required|callback_provinsi_check|trim|xss_clean');
-        $this->form_validation->set_rules('kota', 'Kota', 'required|callback_kota_check|trim|xss_clean');
+            'required|callback_select_check|trim|xss_clean');
+        $this->form_validation->set_rules('kota', 'Kota', 'required|callback_select_check|trim|xss_clean');
 
         if ($this->form_validation->run() == false) {
             $data['provinsiDrop'] = $this->kota_provinsi_model->getProvinsi();
@@ -212,8 +279,8 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('tgl_lahir', 'Tanggal Lahir',
             'required|trim|callback_birth_date_check|xss_clean');
         $this->form_validation->set_rules('provinsi', 'Provinsi',
-            'required|callback_provinsi_check|trim|xss_clean');
-        $this->form_validation->set_rules('kota', 'Kota', 'required|callback_kota_check|trim|xss_clean');
+            'required|callback_select_check|trim|xss_clean');
+        $this->form_validation->set_rules('kota', 'Kota', 'required|callback_select_check|trim|xss_clean');
 
         if ($this->form_validation->run() == false) {
 
@@ -224,7 +291,7 @@ class Admin extends CI_Controller
             }
             $this->load->view('edit_supplier_view', $data);
         } else {
-            if($this->input->post('password')){
+            if ($this->input->post('password')) {
                 $data = array(
 
                     'id_user'          => $this->input->post('id_user'),
@@ -241,7 +308,7 @@ class Admin extends CI_Controller
                     'status_user'      => $this->input->post('status'),
                     'id_kategori_user' => 4
                 );
-            }else{
+            } else {
                 $data = array(
 
                     'id_user'          => $this->input->post('id_user'),
@@ -309,8 +376,8 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('tgl_lahir', 'Tanggal Lahir',
             'required|trim|callback_birth_date_check|xss_clean');
         $this->form_validation->set_rules('provinsi', 'Provinsi',
-            'required|callback_provinsi_check|trim|xss_clean');
-        $this->form_validation->set_rules('kota', 'Kota', 'required|callback_kota_check|trim|xss_clean');
+            'required|callback_select_check|trim|xss_clean');
+        $this->form_validation->set_rules('kota', 'Kota', 'required|callback_select_check|trim|xss_clean');
 
         if ($this->form_validation->run() == false) {
             $data['provinsiDrop'] = $this->kota_provinsi_model->getProvinsi();
@@ -366,8 +433,8 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('tgl_lahir', 'Tanggal Lahir',
             'required|trim|callback_birth_date_check|xss_clean');
         $this->form_validation->set_rules('provinsi', 'Provinsi',
-            'required|callback_provinsi_check|trim|xss_clean');
-        $this->form_validation->set_rules('kota', 'Kota', 'required|callback_kota_check|trim|xss_clean');
+            'required|callback_select_check|trim|xss_clean');
+        $this->form_validation->set_rules('kota', 'Kota', 'required|callback_select_check|trim|xss_clean');
 
         if ($this->form_validation->run() == false) {
 
@@ -378,7 +445,7 @@ class Admin extends CI_Controller
             }
             $this->load->view('edit_seller_view', $data);
         } else {
-            if($this->input->post('password')){
+            if ($this->input->post('password')) {
                 $data = array(
 
                     'id_user'          => $this->input->post('id_user'),
@@ -395,7 +462,7 @@ class Admin extends CI_Controller
                     'status_user'      => $this->input->post('status'),
                     'id_kategori_user' => 3
                 );
-            }else{
+            } else {
                 $data = array(
 
                     'id_user'          => $this->input->post('id_user'),
@@ -463,8 +530,8 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('tgl_lahir', 'Tanggal Lahir',
             'required|trim|callback_birth_date_check|xss_clean');
         $this->form_validation->set_rules('provinsi', 'Provinsi',
-            'required|callback_provinsi_check|trim|xss_clean');
-        $this->form_validation->set_rules('kota', 'Kota', 'required|callback_kota_check|trim|xss_clean');
+            'required|callback_select_check|trim|xss_clean');
+        $this->form_validation->set_rules('kota', 'Kota', 'required|callback_select_check|trim|xss_clean');
 
         if ($this->form_validation->run() == false) {
             $data['provinsiDrop'] = $this->kota_provinsi_model->getProvinsi();
@@ -520,8 +587,8 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('tgl_lahir', 'Tanggal Lahir',
             'required|trim|callback_birth_date_check|xss_clean');
         $this->form_validation->set_rules('provinsi', 'Provinsi',
-            'required|callback_provinsi_check|trim|xss_clean');
-        $this->form_validation->set_rules('kota', 'Kota', 'required|callback_kota_check|trim|xss_clean');
+            'required|callback_select_check|trim|xss_clean');
+        $this->form_validation->set_rules('kota', 'Kota', 'required|callback_select_check|trim|xss_clean');
 
         if ($this->form_validation->run() == false) {
 
@@ -532,7 +599,7 @@ class Admin extends CI_Controller
             }
             $this->load->view('edit_customer_view', $data);
         } else {
-            if($this->input->post('password')){
+            if ($this->input->post('password')) {
                 $data = array(
 
                     'id_user'          => $this->input->post('id_user'),
@@ -549,7 +616,7 @@ class Admin extends CI_Controller
                     'status_user'      => $this->input->post('status'),
                     'id_kategori_user' => 5
                 );
-            }else{
+            } else {
                 $data = array(
 
                     'id_user'          => $this->input->post('id_user'),
@@ -618,8 +685,8 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('tgl_lahir', 'Tanggal Lahir',
             'required|trim|callback_birth_date_check|xss_clean');
         $this->form_validation->set_rules('provinsi', 'Provinsi',
-            'required|callback_provinsi_check|trim|xss_clean');
-        $this->form_validation->set_rules('kota', 'Kota', 'required|callback_kota_check|trim|xss_clean');
+            'required|callback_select_check|trim|xss_clean');
+        $this->form_validation->set_rules('kota', 'Kota', 'required|callback_select_check|trim|xss_clean');
 
         if ($this->form_validation->run() == false) {
             $data['provinsiDrop'] = $this->kota_provinsi_model->getProvinsi();
@@ -675,8 +742,8 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('tgl_lahir', 'Tanggal Lahir',
             'required|trim|callback_birth_date_check|xss_clean');
         $this->form_validation->set_rules('provinsi', 'Provinsi',
-            'required|callback_provinsi_check|trim|xss_clean');
-        $this->form_validation->set_rules('kota', 'Kota', 'required|callback_kota_check|trim|xss_clean');
+            'required|callback_select_check|trim|xss_clean');
+        $this->form_validation->set_rules('kota', 'Kota', 'required|callback_select_check|trim|xss_clean');
 
         if ($this->form_validation->run() == false) {
 
@@ -687,7 +754,7 @@ class Admin extends CI_Controller
             }
             $this->load->view('edit_pegawai_view', $data);
         } else {
-            if($this->input->post('password')){
+            if ($this->input->post('password')) {
                 $data = array(
 
                     'id_user'          => $this->input->post('id_user'),
@@ -704,7 +771,7 @@ class Admin extends CI_Controller
                     'status_user'      => $this->input->post('status'),
                     'id_kategori_user' => 2
                 );
-            }else{
+            } else {
                 $data = array(
 
                     'id_user'          => $this->input->post('id_user'),
@@ -769,7 +836,8 @@ class Admin extends CI_Controller
     //===============================================================================================================
 
 
-    public function email_check()
+    public
+    function email_check()
     {
         $result  = $this->login_model->all_user_email($this->input->post('email'));
         $result2 = $this->login_model->my_user_email($this->input->post('id_user'), $this->input->post('email'));
@@ -785,27 +853,10 @@ class Admin extends CI_Controller
 
     }
 
-    public function provinsi_check()
-    {
-
-        if ($this->input->post('provinsi') == 0) {
-            return false;
-        }
-        return true;
-    }
-
-    public function kota_check()
-    {
-
-        if ($this->input->post('kota') == 0) {
-            return false;
-        }
-        return true;
-
-    }
-
-    public function birth_date_check($str)
-    {
+    public
+    function birth_date_check(
+        $str
+    ) {
 //        $str = "2010-01-05";
         $dateInterval = date_diff(new DateTime(), date_create($str));
 //        var_dump($dateInterval);
@@ -815,5 +866,29 @@ class Admin extends CI_Controller
         }
 //        $this->form_validation->set_message('birth_date_check', 'The %s field can not be the word "test"');
         return false;
+    }
+
+    public
+    function not_minus(
+        $value
+    ) {
+
+        if ($value < 0) {
+            return false;
+        }
+        return true;
+
+    }
+
+    public
+    function select_check(
+        $value
+    ) {
+
+        if ($value == 0) {
+            return false;
+        }
+        return true;
+
     }
 }

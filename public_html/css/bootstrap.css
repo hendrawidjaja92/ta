@@ -3726,9 +3726,9 @@ tbody.collapse.in {
   border-collapse: separate;
 }
 .input-group[class*="col-"] {
-  float: none;
-  padding-right: 0;
-  padding-left: 0;
+  /*float: none;*/
+  padding-right: 20;
+  padding-left: 5;
 }
 .input-group .form-control {
   position: relative;

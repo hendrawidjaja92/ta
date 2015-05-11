@@ -3,7 +3,7 @@ $id_user  = $this->session->userdata('id_user');
 $username = $this->session->userdata('username');
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -116,73 +116,158 @@ $username = $this->session->userdata('username');
     </li>
 </ul>
 
-<div class="judul-2 col-md-offset-0 col-sm-offset-2 col-xs-offset-2 col-md-10 row"
-     data-example-id="carousel-with-captions">
+<div class="judul-2 col-md-offset-2 col-sm-offset-2 col-xs-offset-2 row" data-example-id="carousel-with-captions">
     <ul class="list-group judul-1">
         <li class="list-group-item judul-1">
             <h3>Manage Barang</h3>
         </li>
     </ul>
-    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/add_barang">ADD <span
-                class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
-
-    <table class="table table-hover">
-
-        <tr style="background-color: black; color: white">
-            <th>#</th>
-            <th>Gambar Barang</th>
-            <th>Nama Barang</th>
-            <th>Merk</th>
-            <th>Kategori Barang</th>
-            <th>Stok</th>
-            <th>Harga Jual</th>
-            <th>View</th>
-            <th>Edit</th>
-            <th>Delete</th>
-
-        </tr>
-        <?php $i = 1; ?>
-
-        <?php if ($barang->result()) { ?>
-
-            <?php foreach ($barang->result() as $b): ?>
-
-
-                <?php $data[$i] = $b->id_barang ?>
-                <tr
-                    class="<?= ($b->status_barang == 1) ? "alert-success" : "" ?> <?= ($b->status_barang == 2) ? "alert-danger" : "" ?>">
-                    <td><?= $i ?></td>
-                    <td><?= $b->gambar_barang ?></td>
-                    <td><?= $b->nama_barang ?></td>
-                    <td><?= $b->merk_barang ?></td>
-                    <td><?= $b->nama_kategori_barang ?></td>
-                    <td><?= $b->jumlah ?></td>
-                    <td><?= $b->harga_jual ?></td>
-                    <td><a href="<?= base_url() ?>index.php/admin/view_barang/<?= $b->id_barang ?>"
-                           class="glyphicon glyphicon-user" aria-hidden="true"> VIEW</a></td>
-                    <td><a href="<?= base_url() ?>index.php/admin/edit_barang/<?= $b->id_barang ?>"
-                           class="glyphicon glyphicon-cog" aria-hidden="true"> EDIT</a></td>
-                    <td><a href="#" onclick="confDelete(<?= $$b->id_barang ?>)"
-                           class="glyphicon glyphicon-remove" aria-hidden="true">
-                            DELETE</a></td>
-                    <?php $i += 1; ?>
-                </tr>
-
-            <?php endforeach; ?>
-
-        <?php } else { ?>
-            <tr>
-                <td colspan="10" align="center"><b> --------------- Data is empty ---------------</b></td>
-            </tr>
-        <?php } ?>
+    <h3 style="padding-left: 5%">ADD Barang <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></h3>
 
 
 
-    </table>
-    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/add_barang">ADD <span
-                class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
+    <?php echo form_open_multipart('admin/add_barang'); ?>
+
+
     <br>
+    <div class="col-md-12 col-md-offset-1">
+        <?php echo form_label('Gambar Barang :'); ?>
+    </div>
+    <div class="col-md-4 col-md-offset-1 input">
+        <?php echo form_upload(array(
+            'id'    => 'gambar_barang',
+            'name'  => 'gambar_barang',
+            'class' => 'form-control',
+            'value' => set_value('gambar_barang', '')
+        )); ?>
+    </div>
+    <?php echo form_error('gambar_barang'); ?>
+    <div class="col-md-12 col-md-offset-1">
+        <?php echo form_label('Nama Barang :'); ?>
+    </div>
+    <div class="col-md-5 col-md-offset-1">
+        <?php echo form_input(array(
+            'id'    => 'nama_barang',
+            'name'  => 'nama_barang',
+            'class' => 'form-control',
+            'value' => set_value('nama_barang', "")
+        )); ?>
+    </div>
+    <?php echo form_error('nama_barang'); ?>
+    <div class="col-md-5 col-md-offset-1"></div>
 
+
+    <div class="col-md-9 col-md-offset-1">
+        <?php echo form_label('Harga Beli :'); ?>
+    </div>
+    <div class="col-md-3 col-md-offset-1 input-group">
+        <div class="input-group-addon">Rp</div>
+        <?php echo form_input(array(
+            'id'    => 'harga_beli',
+            'name'  => 'harga_beli',
+            'class' => 'form-control',
+            'style' => 'text-align: right',
+            'value' => set_value('harga_beli', "")
+        )); ?>
+        <div class="input-group-addon">.00</div>
+    </div>
+    <?php echo form_error('harga_beli'); ?>
+
+
+    <div class="col-md-9 col-md-offset-1">
+        <?php echo form_label('Harga_Jual :'); ?>
+    </div>
+    <div class="input-group col-md-3 col-md-offset-1">
+        <div class="input-group-addon">Rp</div>
+        <?php echo form_input(array(
+            'id'    => 'harga_jual',
+            'name'  => 'harga_jual',
+            'class' => 'form-control',
+            'style' => 'text-align: right',
+            'value' => set_value('harga_jual', "")
+        )); ?>
+        <div class="input-group-addon">.00</div>
+    </div>
+    <?php echo form_error('harga_jual'); ?>
+
+
+    <div class="col-md-12 col-md-offset-1">
+        <?php echo form_label('Stok :'); ?>
+    </div>
+    <div class="input-group col-md-1 col-md-offset-1">
+        <?php echo form_input(array(
+            'id'    => 'jumlah',
+            'name'  => 'jumlah',
+            'class' => 'form-control',
+            'style' => 'text-align: right',
+            'value' => set_value('jumlah', "")
+        )); ?>
+    </div>
+
+    <?php echo form_error('jumlah'); ?>
+    <div class="col-md-10 col-md-offset-1">
+        <?php echo form_label('Merk :'); ?>
+    </div>
+    <div class="col-md-4 col-md-offset-1">
+        <?php echo form_input(array(
+            'id'    => 'merk_barang',
+            'name'  => 'merk_barang',
+            'class' => 'form-control',
+            'value' => set_value('merk_barang', '')
+        )); ?>
+    </div>
+    <?php echo form_error('merk_barang'); ?>
+    <div class="col-md-9 col-md-offset-1">
+        <?php echo form_label('Satuan Berat :'); ?>
+    </div>
+    <div class="col-md-2 col-md-offset-1">
+        <?php echo form_input(array(
+            'id'    => 'satuan_berat',
+            'name'  => 'satuan_berat',
+            'class' => 'form-control',
+            'value' => set_value('satuan_berat', '')
+        )); ?>
+    </div>
+    <?php echo form_error('satuan_berat'); ?>
+    <div class="col-md-9 col-md-offset-1">
+        <?php echo form_label('Nilai Berat :'); ?>
+    </div>
+    <div class="col-md-2 col-md-offset-1">
+        <?php echo form_input(array(
+
+            'id'    => 'nilai_berat',
+            'name'  => 'nilai_berat',
+            'class' => 'form-control',
+            'style' => 'text-align: right',
+            'value' => set_value('nilai_berat', '')
+        )); ?>
+    </div>
+    <?php echo form_error('nilai_berat'); ?>
+
+    <div class="col-md-9 col-md-offset-1">
+        <?php echo form_label('Kategori Barang :'); ?>
+    </div>
+    <div class="col-md-4 col-md-offset-1">
+        <select id="kategori_barang" name="kategori_barang" class="form-control">
+            <?php foreach ($kategoriBarang as $key => $value): ?>
+                <option value="<?= $key ?>" <?= set_select('kategori_barang', $key, '') ?>>
+                    <?= $value ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <?php echo form_error('kategori_barang'); ?>
+
+        <br>
+        <br>
+    <div class="modal-footer col-md-10 col-md-offset-1">
+        <?php echo form_submit(array('id' => 'add', 'name' => 'add', 'value' => 'Add', 'class' => 'btn btn-ok')); ?>
+    </div>
+    <?php echo form_close(); ?>
+
+
+
+    <br>
 
 </div>
 
@@ -209,14 +294,6 @@ $username = $this->session->userdata('username');
             });
         });
     });
-
-    function confDelete(id) {
-        var confimation = window.confirm("Are you sure want to delete this barang");
-        if (confimation) {
-            window.location = "<?= base_url() ?>index.php/admin/delete_barang/" + id;
-        }
-    }
-
 
     $('.carousel').carousel({
         interval: 5000
