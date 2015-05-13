@@ -72,5 +72,16 @@ class admin_model extends CI_Model{
 
     }
 
+    public function temp(){
+        $this->db->select('*');
+        $query = $this->db->get('temp');
 
+        return $query;
+    }
+
+    public function delete_temp($id){
+        $this->db->where('id_temp', $id);
+        $this->db->delete('temp');
+
+    }
 } 

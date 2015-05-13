@@ -22,6 +22,7 @@ class Admin extends CI_Controller
         }
         $this->load->model('kota_provinsi_model');
         $this->load->model('admin_model');
+        $this->load->model('supplier_model');
         $this->load->model('login_model');
         $this->load->model('barang_model');
     }
@@ -127,9 +128,11 @@ class Admin extends CI_Controller
 
     function add_barang()
     {
-        $this->form_validation->set_rules('gambar_barang', 'Gambar Barang', 'required|trim|xss_clean');
 
-        $this->form_validation->set_rules('nama_barang', 'Nama Barang', 'required|trim|xss_clean');
+        $this->form_validation->set_rules('gambar_barang', 'Gambar Barang', 'callback_upload_check|trim|xss_clean');
+
+        $this->form_validation->set_rules('nama_barang', 'Nama Barang',
+            'required|callback_barang_check|trim|xss_clean');
         $this->form_validation->set_rules('harga_beli', 'Harga Beli',
             'required|trim|callback_not_minus|numeric|xss_clean');
         $this->form_validation->set_rules('harga_jual', 'Harga Jual',
@@ -143,10 +146,23 @@ class Admin extends CI_Controller
 
         if ($this->form_validation->run() == false) {
             $data['kategoriBarang'] = $this->barang_model->show_kategori_barang();
+
             $this->load->view('add_barang_view', $data);
         } else {
+            $fileType = $_FILES['gambar_barang']['type'];
+            $fileName = $_FILES['gambar_barang']['name'];
+            $fileSize = $_FILES['gambar_barang']['size'];
+            $tempFile = $_FILES['gambar_barang']['tmp_name'];
+            if (!empty($fileName)) {
+                if ($fileType == "image/jpeg" || $fileType == "image/jpg" || $fileType == "image/png") {
+                    $newFile = 'upload_image/' . $this->input->post('nama_barang') . "." . pathinfo($fileName,
+                            PATHINFO_EXTENSION);
+                }
+
+            }
+
             $data = array(
-                'gambar_barang'      => $this->input->post('gambar_barang'),
+                'gambar_barang'      => $newFile,
                 'nama_barang'        => $this->input->post('nama_barang'),
                 'harga_beli'         => $this->input->post('harga_beli'),
                 'harga_jual'         => $this->input->post('harga_jual'),
@@ -159,28 +175,7 @@ class Admin extends CI_Controller
             );
 
 
-            $config['upload_path']   = './upload_image/';
-            $config['allowed_types'] = 'jpeg|jpg|gif|png';
-            $config['max_size']      = '1024';
-            $config['max_width']     = '2024';
-            $config['max_height']    = '1468';
-            $this->load->library('upload', $config);
-
-            $this->upload->do_upload();
-
-            $img['upload_data'] = $this->upload->do_upload();
-
-            $config_resize = [
-                'source_image'    => $img['upload_data']['full_path'],
-                'new_image'       => './thumb/',
-                'maintain_ration' => true,
-                'width'           => 160,
-                'height'          => 120
-            ];
-
-            $$this->config->library('image_lib', $config_resize);
-            $img['images'] = $this->barang_model->fetch_image(FCPATH . 'gambar_barang');
-
+            move_uploaded_file($tempFile, $newFile);
 
 
             $this->db->insert('barang', $data);
@@ -191,6 +186,104 @@ class Admin extends CI_Controller
 
         }
 
+    }
+
+    function edit_barang()
+    {
+        if ($this->input->post('gambar_barang')) {
+            $this->form_validation->set_rules('gambar_barang', 'Gambar Barang', 'callback_upload_check|trim|xss_clean');
+        }
+        $this->form_validation->set_rules('nama_barang', 'Nama Barang',
+            'required|callback_barang_check|trim|xss_clean');
+        $this->form_validation->set_rules('harga_beli', 'Harga Beli',
+            'required|trim|callback_not_minus|numeric|xss_clean');
+        $this->form_validation->set_rules('harga_jual', 'Harga Jual',
+            'required|trim|callback_not_minus|numeric|xss_clean');
+        $this->form_validation->set_rules('jumlah', 'Stok', 'required|trim|callback_not_minus|numeric|xss_clean');
+        $this->form_validation->set_rules('merk_barang', 'Merk', 'required|trim|xss_clean');
+        $this->form_validation->set_rules('satuan_berat', 'Satuan Berat', 'required|trim|alpha|xss_clean');
+        $this->form_validation->set_rules('nilai_berat', 'Nilai Berat', 'required|trim|numeric|xss_clean');
+        $this->form_validation->set_rules('kategori_barang', 'Kategori Barang',
+            'required|trim|callback_select_check|xss_clean');
+
+        if ($this->form_validation->run() == false) {
+            $data['barang'] = $this->barang_model->show_barang_by($this->uri->segment(3));
+
+            $data['kategoriBarang'] = $this->barang_model->show_kategori_barang();
+
+            $this->load->view('edit_barang_view', $data);
+        } else {
+            $fileType = $_FILES['gambar_barang']['type'];
+            $fileName = $_FILES['gambar_barang']['name'];
+            $fileSize = $_FILES['gambar_barang']['size'];
+            $tempFile = $_FILES['gambar_barang']['tmp_name'];
+            if (!empty($fileName)) {
+                if ($fileType == "image/jpeg" || $fileType == "image/jpg" || $fileType == "image/png") {
+                    $newFile = 'upload_image/' . $this->input->post('nama_barang') . "." . pathinfo($fileName,
+                            PATHINFO_EXTENSION);
+                }
+                $data = array(
+                    'gambar_barang'      => $newFile,
+                    'nama_barang'        => $this->input->post('nama_barang'),
+                    'harga_beli'         => $this->input->post('harga_beli'),
+                    'harga_jual'         => $this->input->post('harga_jual'),
+                    'jumlah'             => $this->input->post('jumlah'),
+                    'merk_barang'        => $this->input->post('merk_barang'),
+                    'satuan_berat'       => $this->input->post('satuan_berat'),
+                    'nilai_berat'        => $this->input->post('nilai_berat'),
+                    'id_kategori_barang' => $this->input->post('kategori_barang'),
+                    'status_barang'      => $this->input->post('status_barang'),
+                );
+                foreach ($this->barang_model->show_barang_by($this->uri->segment(3))->result() as $b) {
+                    unlink($b->gambar_barang);
+                }
+
+            } else {
+                $data = array(
+//                    'gambar_barang'      => $newFile,
+                    'nama_barang'        => $this->input->post('nama_barang'),
+                    'harga_beli'         => $this->input->post('harga_beli'),
+                    'harga_jual'         => $this->input->post('harga_jual'),
+                    'jumlah'             => $this->input->post('jumlah'),
+                    'merk_barang'        => $this->input->post('merk_barang'),
+                    'satuan_berat'       => $this->input->post('satuan_berat'),
+                    'nilai_berat'        => $this->input->post('nilai_berat'),
+                    'id_kategori_barang' => $this->input->post('kategori_barang'),
+                    'status_barang'      => $this->input->post('status_barang'),
+                );
+            }
+
+
+            move_uploaded_file($tempFile, $newFile);
+
+            $this->barang_model->update_barang($this->uri->segment(3), $data);
+
+//            $this->db->insert('barang', $data);
+//            $data['barang'] = $this->barang_model->show_barang();
+            $this->session->set_flashdata('category_success', 'Success update barang.');
+            redirect('/admin/manage_barang', $data, true);
+
+
+        }
+    }
+
+    function delete_barang()
+    {
+        foreach ($this->barang_model->show_barang_by($this->uri->segment(3))->result() as $b) {
+            unlink($b->gambar_barang);
+        }
+        $id = $this->uri->segment(3);
+        $this->barang_model->delete($id);
+
+        $this->session->set_flashdata('category_success', 'Success delete barang.');
+        redirect('/admin/manage_barang', [], 'refresh');
+    }
+
+    function view_barang()
+    {
+        $data['barang'] = $this->barang_model->show_barang_by($this->uri->segment(3));
+
+        $this->load->view('view_barang_view', $data);
     }
 
     function manage_refund()
@@ -829,7 +922,116 @@ class Admin extends CI_Controller
 
     function pembelian()
     {
-        $this->load->view('pembelian_view_admin');
+        $this->form_validation->set_rules('gambar_barang', 'Gambar Barang', 'callback_upload_check|trim|xss_clean');
+
+        $this->form_validation->set_rules('nama_barang', 'Nama Barang',
+            'required|callback_barang_check|callback_barang_temp|trim|xss_clean');
+        $this->form_validation->set_rules('harga_beli', 'Harga Beli',
+            'required|trim|callback_not_minus|numeric|xss_clean');
+        $this->form_validation->set_rules('harga_jual', 'Harga Jual',
+            'required|trim|callback_not_minus|numeric|xss_clean');
+        $this->form_validation->set_rules('jumlah', 'Stok', 'required|trim|callback_not_minus|numeric|xss_clean');
+        $this->form_validation->set_rules('merk_barang', 'Merk', 'required|trim|xss_clean');
+        $this->form_validation->set_rules('satuan_berat', 'Satuan Berat', 'required|trim|alpha|xss_clean');
+        $this->form_validation->set_rules('nilai_berat', 'Nilai Berat', 'required|trim|numeric|xss_clean');
+        $this->form_validation->set_rules('kategori_barang', 'Kategori Barang',
+            'required|trim|callback_select_check|xss_clean');
+
+        if ($this->form_validation->run() == false) {
+            $data['supplier']       = $this->supplier_model->show_supplier();
+            $data['kategoriBarang'] = $this->barang_model->show_kategori_barang();
+            $data['temp']           = $this->admin_model->temp();
+            $this->load->view('pembelian_view_admin', $data);
+        } else {
+            $fileType = $_FILES['gambar_barang']['type'];
+            $fileName = $_FILES['gambar_barang']['name'];
+            $fileSize = $_FILES['gambar_barang']['size'];
+            $tempFile = $_FILES['gambar_barang']['tmp_name'];
+            if (!empty($fileName)) {
+                if ($fileType == "image/jpeg" || $fileType == "image/jpg" || $fileType == "image/png") {
+                    $newFile = 'upload_image/' . $this->input->post('nama_barang') . "." . pathinfo($fileName,
+                            PATHINFO_EXTENSION);
+                }
+
+            }
+            $data = [
+                'gambar_barang_temp'      => $newFile,
+                'nama_barang_temp'        => $this->input->post('nama_barang'),
+                'harga_beli_temp'         => $this->input->post('harga_beli'),
+                'harga_jual_temp'         => $this->input->post('harga_jual'),
+                'jumlah_temp'             => $this->input->post('jumlah'),
+                'merk_barang_temp'        => $this->input->post('merk_barang'),
+                'satuan_berat_temp'       => $this->input->post('satuan_berat'),
+                'nilai_berat_temp'        => $this->input->post('nilai_berat'),
+                'status_barang_temp'      => 1,
+                'id_kategori_barang_temp' => $this->input->post('kategori_barang'),
+                'id_supplier'             => $this->input->post('supplier'),
+            ];
+
+            move_uploaded_file($tempFile, $newFile);
+//            var_dump($data['id_supplier']);
+//            die;
+            $this->db->insert('temp', $data);
+            $this->session->set_flashdata('category_success', 'Success add pembelian barang.');
+            redirect('/admin/pembelian', $data, true);
+
+
+        }
+
+
+    }
+
+    function buy_barang()
+    {
+        $i = 0;
+        foreach ($this->admin_model->temp()->result() as $a) {
+            $i++;
+        }
+
+//        for ($x = 0; $x < $i; $x++) {
+        $result = false;
+        foreach ($this->admin_model->temp()->result() as $a) {
+            foreach ($this->barang_model->show_barang()->result() as $b) {
+                var_dump($a->nama_barang_temp);
+                ?><<< TEMP<br> <?php
+                var_dump($b->nama_barang);
+                ?><<< INVENT<br> <?php
+                if ($a->nama_barang_temp == $b->nama_barang) {
+                    $result = true;
+                }
+            }
+            if ($result) {
+                //EDIT
+                echo "TRUE";
+            } else {
+                //INSERT
+                echo "FALSE";
+                var_dump($a);
+                $data = [
+                    'gambar_barang'      => $a->gambar_barang_temp,
+                    'nama_barang'        => $a->nama_barang_temp,
+                    'harga_beli'         => $a->harga_beli_temp,
+                    'harga_jual'         => $a->harga_jual_temp,
+                    'jumlah'             => $a->jumlah_temp,
+                    'merk_barang'        => $a->merk_barang_temp,
+                    'satuan_berat'       => $a->satuan_berat_temp,
+                    'nilai_berat'        => $a->nilai_berat_temp,
+                    'status_barang'      => $a->status_barang_temp,
+                    'id_kategori_barang' => $a->id_kategori_barang_temp,
+                ];
+
+                ?><<< XXXXXXXX<br> <?php
+                var_dump($data);
+                ?><<< ZZZZZZZZZ<br> <?php
+
+                $this->db->insert('barang', $data);
+                $this->admin_model->delete_temp($a->id_temp);
+            }
+        }
+
+        $this->session->set_flashdata('category_success', 'Success buy pembelian barang.');
+        redirect('/admin/pembelian', [], true);
+//        }
     }
 
     function history_penjualan()
@@ -904,5 +1106,44 @@ class Admin extends CI_Controller
         }
         return true;
 
+    }
+
+    public function upload_check($str)
+    {
+//        var_dump($this->input->post('gambar_barang'));
+//        var_dump($this->input->post($_FILES['gambar_barang']['name']));
+        if ($_FILES['gambar_barang']['name'] == '') {
+            return false;
+        }
+        return true;
+    }
+
+    public function barang_check($str)
+    {
+        foreach ($this->barang_model->show_barang()->result() as $a) {
+            foreach ($this->barang_model->show_barang_by($this->uri->segment(3))->result() as $b) {
+
+                if (strtolower($str) == strtolower($a->nama_barang) && strtolower($str) != strtolower($b->nama_barang)) {
+
+                    return false;
+                }
+            }
+
+        }
+        return true;
+    }
+
+    public function barang_temp($str)
+    {
+        foreach ($this->admin_model->temp()->result() as $a) {
+            foreach ($this->barang_model->show_barang()->result() as $b) {
+
+                if (strtolower($str) == strtolower($a->nama_barang_temp) || strtolower($str) == strtolower($b->nama_barang)) {
+
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
