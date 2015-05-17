@@ -1024,8 +1024,8 @@ class Admin extends CI_Controller
                 var_dump($data);
                 ?><<< ZZZZZZZZZ<br> <?php
 
-                $this->db->insert('barang', $data);
-                $this->admin_model->delete_temp($a->id_temp);
+//                $this->db->insert('barang', $data);
+//                $this->admin_model->delete_temp($a->id_temp);
             }
         }
 
@@ -1034,6 +1034,62 @@ class Admin extends CI_Controller
 //        }
     }
 
+    public function pajak()
+    {
+        //set selected country id from POST
+        //run the query for the cities we specified earlier
+        $temp['beli'] = $this->admin_model->temp();
+        $kategoriBarang = $this->barang_model->show_kategori_barang();
+
+        $output                       = null;
+        $i = 1;
+        foreach ($temp['beli']->result() as $row) {
+//            var_dump($output);
+            //here we build a dropdown item line for each query result
+?>
+
+
+<?php //$sub =  $t->jumlah_temp*$t->harga_beli_temp; ?>
+<!--<td align="right"><p id="subtot">--><?//= "Rp " . number_format($sub, 2, ",", ".") ?><!--</p></td>-->
+<!--<td><a href="--><?//= base_url() ?><!--index.php/admin/view_barang/--><?//= $t->id_temp ?><!--"-->
+<!--       class="glyphicon glyphicon-user" aria-hidden="true"> VIEW</a></td>-->
+<!--<td><a href="--><?//= base_url() ?><!--index.php/admin/edit_barang/--><?//= $t->id_temp ?><!--"-->
+<!--       class="glyphicon glyphicon-cog" aria-hidden="true"> EDIT</a></td>-->
+<!--<td><a href="#" onclick="confDelete(--><?//= $t->id_temp ?>//)"
+//       class="glyphicon glyphicon-remove" aria-hidden="true">
+//        DELETE</a></td>
+<?php //$i += 1; ?>
+<?php //$j += $t->jumlah_temp; ?>
+<?php //$tot += $sub; ?>
+<?php
+
+            foreach ($kategoriBarang as $key => $value){
+                if($key == $row->id_kategori_barang_temp):
+                    $value = $value;
+                endif;
+            }
+
+            $output .=
+
+//            "<td>" . $i . "</td>" .
+//            "<td><img height='100px' width='150px' src='" . base_url() . $row->gambar_barang_temp . "'/></td>" .
+//            "<td>" . $row->nama_barang_temp . "</td>" .
+//            "<td>" . $row->merk_barang_temp . " </td>" .
+//            "<td>" . $value . "</td>" .
+//            "<td align='right'>" .  number_format($row->jumlah_temp, 0, ",", ".") . "</td>" .
+            "<td align='right'>" . "Rp " . number_format($row->harga_beli_temp+$row->harga_beli_temp/10, 2, ",", ".") . "</td>" .
+
+//            "<td id='" . $row->id_temp . "'>" . $row->harga_beli_temp*1 . "</td>";
+
+
+            $i++;
+        }
+
+//        var_dump($this->post->input('pajak'));
+//        die;
+
+        echo $output;
+    }
     function history_penjualan()
     {
         $this->load->view('history_penjualan_view_admin');

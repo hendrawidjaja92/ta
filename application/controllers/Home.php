@@ -28,7 +28,7 @@ class Home extends CI_Controller
     public function buildDropKota()
     {
         //set selected country id from POST
-        echo $id_kota = $this->input->post('id', true);
+        $id_kota = $this->input->post('id', true);
         //run the query for the cities we specified earlier
         $districtData['districtDrop'] = $this->kota_provinsi_model->getKotaByProvinsi($id_kota);
         $output                       = null;

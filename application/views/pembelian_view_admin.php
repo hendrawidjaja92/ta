@@ -163,6 +163,18 @@ $username = $this->session->userdata('username');
 <?php echo form_error('supplier'); ?>
 </fieldset>
 
+<div class="col-md-12 col-md-offset-1">
+    <?php echo form_label('No Faktur :'); ?>
+</div>
+<div class="col-md-5 col-md-offset-1">
+    <?php echo form_input(array(
+        'id'    => 'no_faktur_pembelian',
+        'name'  => 'no_faktur_pembelian',
+        'class' => 'form-control',
+        'value' => set_value('no_faktur_pembelian', "")
+    )); ?>
+</div>
+<?php echo form_error('no_faktur_pembelian'); ?>
 
 <div class="col-md-12 col-md-offset-1">
     <?php echo form_label('Gambar Barang :'); ?>
@@ -307,7 +319,7 @@ $username = $this->session->userdata('username');
             class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span></a></h3>
 </div>
 <?php endif; ?>
-<table class="table table-hover">
+<table class="table table-hover" >
 
     <tr style="background-color: black; color: white">
         <th>#</th>
@@ -346,10 +358,17 @@ $username = $this->session->userdata('username');
             <?php endif; ?>
             <?php endforeach; ?>
 
-                <td align="right"><?= number_format($t->jumlah_temp, 0, ",", ".") ?></td>
-                <td align="right"><?= "Rp " . number_format($t->harga_beli_temp, 2, ",", ".") ?></td>
+                <td align="right"><p id="jum"><?= number_format($t->jumlah_temp, 0, ",", ".") ?></p></td>
+
+<!--                --><?php //foreach($beli as $key => $value): ?>
+<!--                <td value="--><?//= $key ?><!--" --><?//= set_select('harga', $key, '') ?><!-->-->
+<!--                    --><?//= $value ?>
+<!--                </td>-->
+<!--                --><?php //endforeach; ?>
+
+                <td align="right"><p id="harga"><?= "Rp " . number_format($t->harga_beli_temp, 2, ",", ".") ?></p></td>
                 <?php $sub =  $t->jumlah_temp*$t->harga_beli_temp; ?>
-                <td align="right"><?= "Rp " . number_format($sub, 2, ",", ".") ?></td>
+                <td align="right"><p id="subtot"><?= "Rp " . number_format($sub, 2, ",", ".") ?></p></td>
                 <td><a href="<?= base_url() ?>index.php/admin/view_barang/<?= $t->id_temp ?>"
                        class="glyphicon glyphicon-user" aria-hidden="true"> VIEW</a></td>
                 <td><a href="<?= base_url() ?>index.php/admin/edit_barang/<?= $t->id_temp ?>"
@@ -360,6 +379,19 @@ $username = $this->session->userdata('username');
                 <?php $i += 1; ?>
                 <?php $j += $t->jumlah_temp; ?>
                 <?php $tot += $sub; ?>
+<!--                --><?php //if(#pajak.checked) ?>
+
+            </tr>
+
+            <tr id="temp_beli" class="<?= ($t->status_barang_temp == 1) ? "alert-success" : "" ?> <?= ($t->status_barang_temp == 2) ? "alert-danger" : "" ?>">
+<!--                --><?php //foreach ($beli as $key => $value): ?>
+<!--                    <td value="--><?//= $key ?><!--" --><?//= set_select('temp_beli', $key, '') ?><!-->-->
+<!--                        --><?//= $value ?>
+<!--                    </td>-->
+<!--                --><?php //endforeach; ?>
+            </tr>
+            <tr id="tes">
+                asd
             </tr>
 
         <?php endforeach; ?>
@@ -385,6 +417,13 @@ $username = $this->session->userdata('username');
 <table class="table table-hover">
 
 </table>
+<div class="checkbox">
+    <label>
+        <input type="checkbox" id="pajak" name="pajak" value="10" aria-label="..."> Pajak 10%
+    </label>
+</div>
+
+
 <?php if ($temp->result()): ?>
 
 <h3 align="right" style="padding-right: 5%"><a href="<?= base_url() ?>index.php/admin/buy_barang">BUY <span
@@ -418,6 +457,57 @@ $username = $this->session->userdata('username');
             });
         });
     });
+
+    $(document).ready(function () {
+        $("#pajak").change(function () {
+            /*dropdown post *///
+            $.ajax({
+                url: "<?php echo base_url();?>index.php/admin/pajak",
+                data: {id: $(this).val()},
+                type: "POST", success: function (data) {
+                    if(($('input[name=pajak]').is(':checked')) == true){
+                        alert("A");
+                        $("#temp_beli").html(data);
+
+                    }else{
+                        alert("B");
+                        
+                    }
+
+
+
+
+
+                    alert(data);
+//                    $("#reg_kota").html(data);
+                }
+            });
+        });
+    });
+
+
+//    function myFunction() {
+//
+//        x = document.getElementById("pajak").value;
+//        y = document.getElementById("harga").innerHTML;
+//        p = document.getElementById("subtot").innerHTML;
+//        q = parseInt(document.getElementById("jum").innerHTML);
+//
+//        alert(q);
+//        y = y.replace(/\./g, '');
+//        y = y.replace(/\Rp/g, '');
+//        y = parseInt(y);
+//
+//
+//        x = y/10;
+//        var z = x + y;
+//
+//        z = z.toFixed(2);
+//        z = z.replace(".", ",");
+//        z = z.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")
+//        document.getElementById("harga").innerHTML = "Rp " + z;
+//    }
+
 
     $('.carousel').carousel({
         interval: 5000

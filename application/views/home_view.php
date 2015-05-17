@@ -689,6 +689,7 @@
                 url: "<?php echo base_url();?>index.php/home/buildDropKota",
                 data: {id: $(this).val()},
                 type: "POST", success: function (data) {
+                    alert((data));
                     $("#reg_kota").html(data)
                     ;
                 }
@@ -705,7 +706,6 @@
                 data: $("#form_login").serialize(),
                 type: "POST",
                 success: function (data) {
-
                     if (data.result == "success") {
                         window.location.href = "<?= base_url('index.php') ?>" + data.url;
                     } else {
@@ -725,6 +725,7 @@
                 data: $("#form_registrasi").serialize(),
                 type: "POST",
                 success: function (data) {
+                    alert(data.result);
 
                     if (data.result == "success") {
                         window.location.href = "<?= base_url('index.php') ?>" + data.url;
@@ -732,7 +733,7 @@
                         $("#form_registrasi").html(data.view);
                     }
 
-//                    alert(data.view);
+
                 }
             });
         });
