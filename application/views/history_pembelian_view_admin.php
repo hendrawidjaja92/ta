@@ -1,5 +1,6 @@
 <?php
 $id_user = $this->session->userdata('id_user');
+$username = $this->session->userdata('username');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -41,7 +42,7 @@ $id_user = $this->session->userdata('id_user');
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="<?= base_url() ?>index.php/admin">Home</a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">=Nama User=<span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
@@ -52,8 +53,8 @@ $id_user = $this->session->userdata('id_user');
                         <li><a href="<?= base_url() ?>index.php/admin/manage_customer">Manage Customer</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_pegawai">Manage Pegawai</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/pembelian">Pembelian</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Penjualan</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Pembelian</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Penjualan</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Pembelian</a></li>
                         <li class="divider"></li>
                         <li><a href="#">Logout</a></li>
                     </ul>
@@ -119,8 +120,67 @@ $id_user = $this->session->userdata('id_user');
             <h3>History Pembelian</h3>
         </li>
     </ul>
+
     <br>
 
+    <table class="table table-hover">
+
+        <tr style="background-color: black; color: white;">
+            <th style="background-color: black; color: white; text-align: center" >#</th>
+            <th style="background-color: black; color: white; text-align: center">No Faktur</th>
+            <th style="background-color: black; color: white; text-align: center">Tanggal</th>
+            <th style="background-color: black; color: white; text-align: center">Total</th>
+            <th style="background-color: black; color: white; text-align: center">Pajak</th>
+            <th style="background-color: black; color: white; text-align: center">Supplier</th>
+            <th style="background-color: black; color: white; text-align: center">View</th>
+
+        </tr>
+        <?php $i = 1; ?>
+
+        <?php if ($pembelian->result()) { ?>
+
+            <?php foreach ($pembelian->result() as $p): ?>
+
+
+                <?php $data[$i] = $p->id_pembelian ?>
+                <tr
+                    class="<?= ($p->status_pembelian == 1) ? "alert-success" : "" ?> <?= ($p->status_pembelian == 2) ? "alert-danger" : "" ?>">
+                    <td><?= $i ?></td>
+
+                    <td align="center"><?= $p->no_faktur_pembelian ?></td>
+                    <?php
+                    $originalDate = $p->tgl_beli;
+                    $newDate = date("d - M - Y", strtotime($originalDate));
+                    ?>
+                    <td align="center"><?= $newDate ?></td>
+                    <td align="right"><?= "Rp " . number_format($p->total_beli ,2,",",".") ?></td>
+                    <td align="center"><?= ($p->pajak == 0) ? "Non Pajak" : "Pajak"?></td>
+                    <?php
+                    foreach ($supplier->result() as $s) {
+                        if ($s->id_user == $p->id_supplier) {
+                        $nama_perus = $s->nama_perusahaan;
+                        }
+                    }
+                    ?>
+                    <td><?= $nama_perus ?></td>
+
+                    <td><a href="<?= base_url() ?>index.php/admin/view_pembelian/<?= $p->id_pembelian ?>"
+                           class="glyphicon glyphicon-user" aria-hidden="true"> VIEW</a></td>
+
+                    <?php $i += 1; ?>
+                </tr>
+
+            <?php endforeach; ?>
+
+        <?php } else { ?>
+            <tr>
+                <td colspan="10" align="center"><b> --------------- Data is empty ---------------</b></td>
+            </tr>
+        <?php } ?>
+
+
+
+    </table>
 </div>
 
 <nav class="modal-footer">

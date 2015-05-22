@@ -65,8 +65,8 @@ $username = $this->session->userdata('username');
                             <li><a href="<?= base_url() ?>index.php/admin/manage_customer">Manage Customer</a></li>
                             <li><a href="<?= base_url() ?>index.php/admin/manage_pegawai">Manage Pegawai</a></li>
                             <li><a href="<?= base_url() ?>index.php/admin/pembelian">Pembelian</a></li>
-                            <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Penjualan</a></li>
-                            <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Pembelian</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Penjualan</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Pembelian</a></li>
                             <li class="divider"></li>
                             <li><a href="<?= base_url() ?>index.php/admin/logout">Logout</a></li>
 

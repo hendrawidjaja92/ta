@@ -127,83 +127,127 @@ $username = $this->session->userdata('username');
 <?php if ($this->session->flashdata('category_success')) { ?>
     <div class="alert alert-success"> <?= $this->session->flashdata('category_success') ?> </div>
 <?php } ?>
+    <?php foreach ($barang->result() as $b): ?>
+<?php echo form_open_multipart('admin/pembelian_tambah/'.$b->id_barang); ?>
 
-<?php echo form_open_multipart('admin/pembelian'); ?>
 
 
-<?php $i = 0; ?>
+
+    <?php $id_sup = $b->id_supplier; ?>
+    <?php $gambar = $b->gambar_barang; ?>
+
+<?php endforeach; ?>
+    <?php $i = 0; ?>
+<?php foreach ($supplier->result() as $s): ?>
+<?php    if($id_sup == $s->id_user){
+        $nama_perusahaan = $s->nama_perusahaan;
+    } ?>
+<?php endforeach; ?>
+
 <?php foreach ($temp->result() as $t): ?>
-    <?php $id_sup = $t->id_supplier; ?>
-    <?php $no_fak = $t->no_faktur_pembelian_temp; ?>
+<?php $no_fak = $t->no_faktur_pembelian_temp; ?>
     <?php $i++; ?>
 <?php endforeach; ?>
 
-
 <br>
 
-<div class="col-md-12 col-md-offset-1">
+
+
+<div class="col-md-2 col-md-offset-1" hidden="hidden">
+    <?php echo form_input(array(
+        'id'    => 'supplier',
+        'name'  => 'supplier',
+        'class' => 'form-control',
+        'value' => set_value('supplier', $id_sup)
+    )); ?>
+    <?php echo form_input(array(
+        'id'    => 'gambar_barang',
+        'name'  => 'gambar_barang',
+        'class' => 'form-control',
+        'value' => set_value('gambar_barang', $b->gambar_barang)
+    )); ?>
+    <?php echo form_input(array(
+        'id'    => 'nama_barang',
+        'name'  => 'nama_barang',
+        'class' => 'form-control',
+        'value' => set_value('nama_barang', $b->nama_barang)
+    )); ?>
+    <?php echo form_input(array(
+        'id'    => 'merk_barang',
+        'name'  => 'merk_barang',
+        'class' => 'form-control',
+        'value' => set_value('merk_barang', $b->merk_barang)
+    )); ?>
+    <?php echo form_input(array(
+        'id'    => 'satuan_berat',
+        'name'  => 'satuan_berat',
+        'class' => 'form-control',
+        'value' => set_value('satuan_berat', $b->satuan_berat)
+    )); ?>
+    <?php echo form_input(array(
+        'id'    => 'nilai_berat',
+        'name'  => 'nilai_berat',
+        'class' => 'form-control',
+        'value' => set_value('nilai_berat', $b->nilai_berat)
+    )); ?>
+    <?php echo form_input(array(
+        'id'    => 'kategori_barang',
+        'name'  => 'kategori_barang',
+        'class' => 'form-control',
+        'value' => set_value('kategori_barang', $b->id_kategori_barang)
+    )); ?>
+</div>
+<div class="col-md-2 col-md-offset-1">
     <?php echo form_label('Supplier :'); ?>
 </div>
+<div class="col-md-0 col-md-offset-1">
+    <?php echo form_label(set_value('supplier', $nama_perusahaan))?>
+</div>
+<div class="col-md-2 col-md-offset-1">
+    <?php echo form_label('Gambar Barang :'); ?>
+</div>
+<div class="col-md-0 col-md-offset-1">
+    <img height="100px" width="150px" src="<?= base_url().$b->gambar_barang ?>"</img>
+</div>
+<div class="col-md-2 col-md-offset-1">
+    <?php echo form_label('Nama Barang :'); ?>
+</div>
+<div class="col-md-0 col-md-offset-1">
+    <?php echo form_label(set_value('nama_barang', $b->nama_barang))?>
+</div>
+<div class="col-md-2 col-md-offset-1">
+    <?php echo form_label('Merk :'); ?>
+</div>
+<div class="col-md-0 col-md-offset-1">
+    <?php echo form_label(set_value('merk_barang', $b->merk_barang))?>
+</div>
+<div class="col-md-2 col-md-offset-1">
+    <?php echo form_label('Satuan Berat :'); ?>
+</div>
+<div class="col-md-0 col-md-offset-1">
+    <?php echo form_label(set_value('satuan_berat', $b->satuan_berat))?>
+</div>
+<div class="col-md-2 col-md-offset-1">
+    <?php echo form_label('Nilai Berat :'); ?>
+</div>
+<div class="col-md-0 col-md-offset-1">
+    <?php echo form_label(set_value('nilai_berat', number_format($b->nilai_berat,0,",",".")))?>
+</div>
+<div class="col-md-2 col-md-offset-1">
+    <?php echo form_label('Kategori Barang :'); ?>
+</div>
+<div class="col-md-0 col-md-offset-1">
 
-<fieldset class="col-md-4 col-md-offset-1" <?= ($i > 0) ? "disabled" : "" ?>>
-    <div>
-        <select id="<?= ($i > 0) ? "supplier2" : "supplier" ?>" name="<?= ($i > 0) ? "supplier2" : "supplier" ?>" class="form-control">
-            <option value="0">-- Select Supplier --</option>
-            <?php foreach ($supplier->result() as $s): ?>
-                <option value="<?= $s->id_user ?>" <?= set_select('supplier', $s->id_user, ($i == 0) ? '' : $id_sup == $s->id_user) ?>>
-                    <?= $s->nama_perusahaan ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </div>
-
-</fieldset>
-<?php //echo form_error('supplier'); ?>
-<div hidden="hidden" >
-    <select id="<?= ($i > 0) ? "supplier" : "supplier2" ?>" name="<?= ($i > 0) ? "supplier" : "supplier2" ?>" class="form-control">
-        <?php foreach ($supplier->result() as $s): ?>
-            <option value="<?= $s->id_user ?>" <?= set_select('supplier', $s->id_user,
-                ($i == 0) ? "" : $id_sup == $s->id_user) ?>>
-                <?= $s->nama_perusahaan ?>
-            </option>
+        <?php foreach ($kategoriBarang as $key => $value): ?>
+            <?php if($b->id_kategori_barang == $key){
+                $kategori = $value;
+            } ?>
         <?php endforeach; ?>
-    </select>
+
+    <?php echo form_label(set_value('kategori_barang', $kategori))?>
+
 </div>
 <br>
-<br>
-
-<div class="col-md-12 col-md-offset-1">
-    <?php echo form_button([
-        'id'          => 'pilih_barang',
-        'name'        => 'pilih_barang',
-        'class'       => 'btn btn-primary',
-        'content'     => '-------------------- Choose Barang --------------------',
-        'data-toggle' => 'modal',
-        'data-target' => '.pil_barang',
-    ]); ?>
-</div>
-
-<!--// =============================================================================================================-->
-<div class="modal fade pil_barang" tabindex="-1" role="dialog"
-     aria-labelledby="myLargeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header-edit">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">×</span></button>
-                <h4>Choose Barang</h4></div>
-            <!--            --><?php //echo form_open('admin/pembelian'); ?>
-            <div class="modal-body row">
-
-                <table class="table table-hover" id="barang">
-
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-<!--// =============================================================================================================-->
-
 
 <div class="col-md-12 col-md-offset-1">
     <?php echo form_label('No Faktur :'); ?>
@@ -239,31 +283,6 @@ $username = $this->session->userdata('username');
     </div>
 </fieldset>
 
-<div class="col-md-12 col-md-offset-1">
-    <?php echo form_label('Gambar Barang :'); ?>
-</div>
-<div class="col-md-4 col-md-offset-1 input">
-    <?php echo form_upload(array(
-        'id'    => 'gambar_barang',
-        'name'  => 'gambar_barang',
-        'class' => 'form-control',
-        'value' => set_value('gambar_barang', '')
-    )); ?>
-</div>
-<?php echo form_error('gambar_barang'); ?>
-<div class="col-md-12 col-md-offset-1">
-    <?php echo form_label('Nama Barang :'); ?>
-</div>
-<div class="col-md-5 col-md-offset-1">
-    <?php echo form_input(array(
-        'id'    => 'nama_barang',
-        'name'  => 'nama_barang',
-        'class' => 'form-control',
-        'value' => set_value('nama_barang', "")
-    )); ?>
-</div>
-<?php echo form_error('nama_barang'); ?>
-<div class="col-md-5 col-md-offset-1"></div>
 
 
 <div class="col-md-9 col-md-offset-1">
@@ -301,7 +320,7 @@ $username = $this->session->userdata('username');
 
 
 <div class="col-md-12 col-md-offset-1">
-    <?php echo form_label('Stok :'); ?>
+    <?php echo form_label('Jumlah :'); ?>
 </div>
 <div class="input-group col-md-1 col-md-offset-1">
     <?php echo form_input(array(
@@ -314,58 +333,9 @@ $username = $this->session->userdata('username');
 </div>
 
 <?php echo form_error('jumlah'); ?>
-<div class="col-md-10 col-md-offset-1">
-    <?php echo form_label('Merk :'); ?>
-</div>
-<div class="col-md-4 col-md-offset-1">
-    <?php echo form_input(array(
-        'id'    => 'merk_barang',
-        'name'  => 'merk_barang',
-        'class' => 'form-control',
-        'value' => set_value('merk_barang', '')
-    )); ?>
-</div>
-<?php echo form_error('merk_barang'); ?>
-<div class="col-md-9 col-md-offset-1">
-    <?php echo form_label('Satuan Berat :'); ?>
-</div>
-<div class="col-md-2 col-md-offset-1">
-    <?php echo form_input(array(
-        'id'    => 'satuan_berat',
-        'name'  => 'satuan_berat',
-        'class' => 'form-control',
-        'value' => set_value('satuan_berat', '')
-    )); ?>
-</div>
-<?php echo form_error('satuan_berat'); ?>
-<div class="col-md-9 col-md-offset-1">
-    <?php echo form_label('Nilai Berat :'); ?>
-</div>
-<div class="col-md-2 col-md-offset-1">
-    <?php echo form_input(array(
 
-        'id'    => 'nilai_berat',
-        'name'  => 'nilai_berat',
-        'class' => 'form-control',
-        'style' => 'text-align: right',
-        'value' => set_value('nilai_berat', '')
-    )); ?>
-</div>
-<?php echo form_error('nilai_berat'); ?>
 
-<div class="col-md-9 col-md-offset-1">
-    <?php echo form_label('Kategori Barang :'); ?>
-</div>
-<div class="col-md-4 col-md-offset-1">
-    <select id="kategori_barang" name="kategori_barang" class="form-control">
-        <?php foreach ($kategoriBarang as $key => $value): ?>
-            <option value="<?= $key ?>" <?= set_select('kategori_barang', $key, '') ?>>
-                <?= $value ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
-</div>
-<?php echo form_error('kategori_barang'); ?>
+
 
 <br>
 <br>
@@ -378,103 +348,6 @@ $username = $this->session->userdata('username');
 </div>
 <?php echo form_close(); ?>
 
-<table class="table table-hover" id="temp_beli">
-
-    <tr style="background-color: black; color: white">
-        <th>#</th>
-        <th>Gambar Barang</th>
-        <th>Nama Barang</th>
-        <th>Merk</th>
-        <th>Kategori Barang</th>
-        <th>Jumlah</th>
-        <th>Harga Beli</th>
-        <th>Sub Total</th>
-        <th>View</th>
-        <th>Edit</th>
-        <th>Delete</th>
-
-    </tr>
-    <?php $i = 1; ?>
-    <?php $j = 0; ?>
-    <?php $tot = 0; ?>
-
-
-    <?php if ($temp->result()) { ?>
-
-        <?php foreach ($temp->result() as $t): ?>
-
-            <!--            --><?php //echo var_dump($t->gambar_barang_temp); ?>
-            <?php $data[$i] = $t->id_temp ?>
-            <tr
-                class="<?= ($t->status_barang_temp == 1) ? "alert-success" : "" ?> <?= ($t->status_barang_temp == 2) ? "alert-danger" : "" ?>">
-                <td><?= $i ?></td>
-                <td><img height="100px" width="150px" src="<?= base_url() . $t->gambar_barang_temp ?>"</img></td>
-                <td><?= $t->nama_barang_temp ?></td>
-                <td><?= $t->merk_barang_temp ?></td>
-                <?php foreach ($kategoriBarang as $key => $value): ?>
-                    <?php if ($key == $t->id_kategori_barang_temp): ?>
-                        <td> <?= $value; ?></td>
-                    <?php endif; ?>
-                <?php endforeach; ?>
-
-                <td align="right"><p id="jum"><?= number_format($t->jumlah_temp, 0, ",", ".") ?></p></td>
-
-                <!--                --><?php //foreach($beli as $key => $value): ?>
-                <!--                <td value="--><? //= $key ?><!--" --><? //= set_select('harga', $key, '') ?><!-->
-                <!--                    --><? //= $value ?>
-                <!--                </td>-->
-                <!--                --><?php //endforeach; ?>
-
-                <td align="right"><p id="harga"><?= "Rp " . number_format($t->harga_beli_temp, 2, ",", ".") ?></p></td>
-                <?php $sub = $t->jumlah_temp * $t->harga_beli_temp; ?>
-                <td align="right"><p id="subtot"><?= "Rp " . number_format($sub, 2, ",", ".") ?></p></td>
-                <td><a href="<?= base_url() ?>index.php/admin/view_barang_temp/<?= $t->id_temp ?>"
-                       class="glyphicon glyphicon-user" aria-hidden="true"> VIEW</a></td>
-                <td><a href="<?= base_url() ?>index.php/admin/edit_barang_temp/<?= $t->id_temp ?>"
-                       class="glyphicon glyphicon-cog" aria-hidden="true"> EDIT</a></td>
-                <td><a href="#" onclick="confDelete(<?= $t->id_temp ?>)"
-                       class="glyphicon glyphicon-remove" aria-hidden="true">
-                        DELETE</a></td>
-                <?php $i += 1; ?>
-                <?php $j += $t->jumlah_temp; ?>
-                <?php $tot += $sub; ?>
-                <!--                --><?php //if(#pajak.checked) ?>
-
-            </tr>
-
-
-        <?php endforeach; ?>
-        <tr style="background-color: black; color: white">
-            <td colspan="5" align="center"><strong><?= $i - 1 . " Items " ?></strong></td>
-
-            <td align="right" style="border: solid 1px"><strong><?= number_format($j, 0, ",", ".") ?></strong></td>
-            <td></td>
-            <td align="right" style="border: solid 1px"><strong><?= "Rp " . number_format($tot, 2, ",", ".") ?></strong>
-            </td>
-
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-    <?php } else { ?>
-        <tr>
-            <td colspan="10" align="center"><b> --------------- Data is empty ---------------</b></td>
-        </tr>
-    <?php } ?>
-
-
-</table>
-<div class="checkbox">
-    <label>
-        <input type="checkbox" id="pajak" name="pajak" value="10" aria-label="..."> Pajak 10%
-    </label>
-</div>
-
-<?php if ($temp->result()): ?>
-
-    <h3 align="right" style="padding-right: 5%"><a id="cekpajak" href="#">BUY <span
-                class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span></a></h3>
-<?php endif; ?>
 
 <br>
 
@@ -498,36 +371,6 @@ $username = $this->session->userdata('username');
                 data: {id: $(this).val()},
                 type: "POST", success: function (data) {
                     $("#kota").html(data)
-                    ;
-                }
-            });
-        });
-    });
-
-//    $(document).ready(function () {
-//        $("#supplier").change(function () {
-//            /*dropdown post *///
-//            $.ajax({
-//                url: "<?php //echo base_url();?>//index.php/admin/buildBarang",
-//                data: {id: $(this).val()},
-//                type: "POST", success: function (data) {
-//                    alert((data));
-//                    $("#barang").html(data)
-//                    ;
-//                }
-//            });
-//        });
-//    });
-
-    $(document).ready(function () {
-        $("#pilih_barang").click(function () {
-            /*dropdown post *///
-            $.ajax({
-                url: "<?php echo base_url();?>index.php/admin/buildBarang",
-                data: {id: $('#supplier').val()},
-                type: "POST", success: function (data) {
-//                    alert((data));
-                    $("#barang").html(data)
                     ;
                 }
             });
@@ -584,40 +427,11 @@ $username = $this->session->userdata('username');
             if (x == 0) {
                 alert("DOR!")
             } else {
-                alert("YES!"+ x)
-//                document.getElementById("myDiv").innerHTML = x;
+                alert("YES!")
             }
         });
     });
 
-    //    function CekPajak(){
-    //        if($('input[name=pajak]').is(':checked')) == true){
-    //            alert("A");
-    //        }else{
-    //            alert("B");
-    //        }
-    //    }
-    //    function myFunction() {
-    //
-    //        x = document.getElementById("pajak").value;
-    //        y = document.getElementById("harga").innerHTML;
-    //        p = document.getElementById("subtot").innerHTML;
-    //        q = parseInt(document.getElementById("jum").innerHTML);
-    //
-    //        alert(q);
-    //        y = y.replace(/\./g, '');
-    //        y = y.replace(/\Rp/g, '');
-    //        y = parseInt(y);
-    //
-    //
-    //        x = y/10;
-    //        var z = x + y;
-    //
-    //        z = z.toFixed(2);
-    //        z = z.replace(".", ",");
-    //        z = z.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")
-    //        document.getElementById("harga").innerHTML = "Rp " + z;
-    //    }
 
 
     $('.carousel').carousel({

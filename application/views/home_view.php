@@ -689,7 +689,7 @@
                 url: "<?php echo base_url();?>index.php/home/buildDropKota",
                 data: {id: $(this).val()},
                 type: "POST", success: function (data) {
-                    alert((data));
+//                    alert((data));
                     $("#reg_kota").html(data)
                     ;
                 }

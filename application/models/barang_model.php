@@ -30,10 +30,19 @@ class barang_model extends CI_Model{
         return $query;
     }
 
+    public function show_barang_by_name($str){
+        $this->db->where(strtolower('nama_barang'), strtolower($str));
+        $this->db->join('kategori_barang', 'kategori_barang.id_kategori_barang = barang.id_kategori_barang');
+
+        $query = $this->db->get('barang');
+
+        return $query;
+    }
+
     public function update_barang($id,$data) {
         $this->db->where('id_barang',$id);
         $this->db->update('barang', $data);
-        $this->db->join('kategori_barang', 'kategori_barang.id_kategori_barang = barang.id_kategori_barang');
+        $this->db->join('kategori_barang as k', 'k.id_kategori_barang = barang.id_kategori_barang');
         return TRUE;
     }
 

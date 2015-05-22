@@ -58,7 +58,7 @@ $username = $this->session->userdata('username');
                         <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Penjualan</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Pembelian</a></li>
                         <li class="divider"></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/logout">Logout</a></li>
+                        <li><a href="#">Logout</a></li>
                     </ul>
                 </li>
                 <li><a href="#">Tentang Kami</a></li>
@@ -116,61 +116,108 @@ $username = $this->session->userdata('username');
     </li>
 </ul>
 
-<div class="judul-2 col-md-offset-0 col-sm-offset-2 col-xs-offset-2 col-md-10 row"
-     data-example-id="carousel-with-captions">
+<div class="judul-2 col-md-offset-2 col-sm-offset-2 col-xs-offset-2 row" data-example-id="carousel-with-captions">
     <ul class="list-group judul-1">
         <li class="list-group-item judul-1">
-            <h3>Manage Supplier</h3>
+            <h3>History Pembelian</h3>
         </li>
     </ul>
-    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/add_supplier">ADD <span
-                class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
-    <?php if ($this->session->flashdata('category_success')) { ?>
-        <div class="alert alert-success"> <?= $this->session->flashdata('category_success') ?> </div>
-    <?php } ?>
+
+    <br>
+
+
+    <?php $i = 1; ?>
+
+    <?php if ($pembelian->result()) { ?>
+
+
+    <?php foreach ($pembelian->result() as $p): ?>
+        <div class="col-md-2 col-md-offset-1">
+            <?php echo form_label('No Faktur :'); ?>
+        </div>
+        <div class="col-md-0 col-md-offset-1">
+            <?php echo form_label(set_value('no_faktur_pembelian', $p->no_faktur_pembelian)) ?>
+        </div>
+        <div class="col-md-2 col-md-offset-1">
+            <?php echo form_label('Tanggal :'); ?>
+        </div>
+        <?php
+        $originalDate = $p->tgl_beli;
+        $newDate      = date("d - M - Y", strtotime($originalDate));
+        ?>
+        <div class="col-md-0 col-md-offset-1">
+            <?php echo form_label(set_value('tgl_beli', $newDate)) ?>
+        </div>
+        <div class="col-md-2 col-md-offset-1">
+            <?php echo form_label('Total :'); ?>
+        </div>
+        <div class="col-md-0 col-md-offset-1">
+            <?php echo form_label(set_value('total_beli', "Rp " . number_format($p->total_beli, 2, ",", "."))) ?>
+        </div>
+        <div class="col-md-2 col-md-offset-1">
+            <?php echo form_label('Pajak :'); ?>
+        </div>
+        <div class="col-md-0 col-md-offset-1">
+            <?php echo form_label(set_value('pajak', ($p->pajak == 0) ? "Non Pajak" : "Pajak")) ?>
+        </div>
+        <div class="col-md-2 col-md-offset-1">
+            <?php echo form_label('Supplier :'); ?>
+        </div>
+        <?php
+        foreach ($supplier->result() as $s) {
+            if ($s->id_user == $p->id_supplier) {
+                $nama_perus = $s->nama_perusahaan;
+            }
+        }
+        ?>
+        <div class="col-md-0 col-md-offset-1">
+            <?php echo form_label(set_value('supplier', $nama_perus)) ?>
+        </div>
+    <?php endforeach; ?>
+
+    <br>
+    <br>
+
     <table class="table table-hover">
 
-        <tr style="background-color: black; color: white">
-            <th>#</th>
-            <th>Nama</th>
-            <th>Email</th>
-            <th>Nama Perusahaan</th>
-            <th>Alamat</th>
-            <th>No Telepon</th>
-            <th>Jenis Kelamin</th>
-            <th>View</th>
-            <th>Edit</th>
-            <th>Delete</th>
+        <tr style="background-color: black; color: white;">
+            <th style="background-color: black; color: white; text-align: center">#</th>
+            <th style="background-color: black; color: white; text-align: center">Gambar Barang</th>
+            <th style="background-color: black; color: white; text-align: center">Nama Barang</th>
+            <th style="background-color: black; color: white; text-align: center">Jumlah</th>
+            <th style="background-color: black; color: white; text-align: center">Harga Beli</th>
+            <th style="background-color: black; color: white; text-align: center">Merk</th>
+            <th style="background-color: black; color: white; text-align: center">Kategori Barang</th>
 
         </tr>
-        <?php $i = 1; ?>
-
-        <?php if ($supplier->result()) { ?>
-
-            <?php foreach ($supplier->result() as $s): ?>
+        <?php foreach ($detail->result() as $d): ?>
 
 
-                <?php $data[$i] = $s->id_user ?>
-                <tr
-                    class="<?= ($s->status_user == 1) ? "alert-success" : "" ?> <?= ($s->status_user == 2) ? "alert-danger" : "" ?>">
-                    <td><?= $i ?></td>
-                    <td><?= $s->nama_user ?></td>
-                    <td><?= $s->email ?></td>
-                    <td><?= $s->nama_perusahaan ?></td>
-                    <td><?= $s->alamat ?></td>
-                    <td><?= $s->no_telepon ?></td>
-                    <td><?= ($s->jenis_kelamin == 1) ? "Laki-laki" : "Perempuan" ?></td>
-                    <td><a href="<?= base_url() ?>index.php/admin/view_supplier/<?= $s->id_user ?>"
-                           class="glyphicon glyphicon-user" aria-hidden="true"> VIEW</a></td>
-                    <td><a href="<?= base_url() ?>index.php/admin/edit_supplier/<?= $s->id_user ?>"
-                           class="glyphicon glyphicon-cog" aria-hidden="true"> EDIT</a></td>
-                    <td><a href="#" onclick="confDelete(<?= $s->id_user ?>)"
-                           class="glyphicon glyphicon-remove" aria-hidden="true">
-                            DELETE</a></td>
-                    <?php $i += 1; ?>
-                </tr>
+            <?php $data[$i] = $d->id_pembelian ?>
+            <tr
+                class="<?= ($d->status_pembelian == 1) ? "alert-success" : "" ?> <?= ($d->status_pembelian == 2) ? "alert-danger" : "" ?>">
+                <td><?= $i ?></td>
 
-            <?php endforeach; ?>
+                <td align="center"><img height="100px" width="150px" src="<?= base_url().$d->gambar_barang ?>" /></td>
+                <td><?= $d->nama_barang ?></td>
+                <td align="right"><?= number_format($d->jumlah_beli_detail, 0, ",", ".") ?></td>
+
+                <td align="right"><?= "Rp " . number_format($d->harga_beli_detail, 2, ",", ".") ?></td>
+                <td align="center"><?= $d->merk_barang ?></td>
+
+                <?php foreach ($kategoriBarang as $key => $value): ?>
+                    <?php if($d->id_kategori_barang == $key){
+                        $kategori = $value;
+                    } ?>
+                <?php endforeach; ?>
+
+                <td align="center"><?= $kategori ?></td>
+
+
+                <?php $i += 1; ?>
+            </tr>
+
+        <?php endforeach; ?>
 
         <?php } else { ?>
             <tr>
@@ -179,13 +226,7 @@ $username = $this->session->userdata('username');
         <?php } ?>
 
 
-
     </table>
-    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/add_supplier">ADD <span
-                class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
-    <br>
-
-
 </div>
 
 <nav class="modal-footer">
@@ -211,14 +252,6 @@ $username = $this->session->userdata('username');
             });
         });
     });
-
-    function confDelete(id) {
-        var confimation = window.confirm("Are you sure want to delete this supplier");
-        if (confimation) {
-            window.location = "<?= base_url() ?>index.php/admin/delete_supplier/" + id;
-        }
-    }
-
 
     $('.carousel').carousel({
         interval: 5000

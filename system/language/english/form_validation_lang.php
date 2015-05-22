@@ -106,3 +106,6 @@ $lang['form_validation_barang_check']          = '<div class="col-md-4 col-md-of
 $lang['form_validation_barang_temp']     = '<div class="col-md-4 col-md-offset-0 alert alert-danger" role="alert">
                                         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                                         <span class="sr-only">Error:</span>Enter another %s</div>';
+$lang['form_validation_barang_temp_id']     = '<div class="col-md-4 col-md-offset-0 alert alert-danger" role="alert">
+                                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                        <span class="sr-only">Error:</span>Enter another %s</div>';

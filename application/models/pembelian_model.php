@@ -13,55 +13,92 @@ class pembelian_model extends CI_Model
         parent::__construct();
     }
 
-    public function show_barang()
+    public function show_pembelian()
     {
         $this->db->select('*');
-        $this->db->join('kategori_barang', 'kategori_barang.id_kategori_barang = barang.id_kategori_barang');
-
-        $query = $this->db->get('barang');
-
-        return $query;
-    }
-
-    public function show_barang_by($id)
-    {
-        $this->db->where('id_barang', $id);
-        $this->db->join('kategori_barang', 'kategori_barang.id_kategori_barang = barang.id_kategori_barang');
-
-        $query = $this->db->get('barang');
+        $this->db->join('user as u', 'u.id_user = pembelian.id_user');
+        $this->db->join('user as s', 's.id_user = pembelian.id_supplier');
+        $this->db->order_by('tgl_beli', 'desc');
+        $query = $this->db->get('pembelian');
 
         return $query;
     }
 
-    public function update_barang($id, $data)
+    public function show_pembelian_by_id_pem($id)
     {
-        $this->db->where('id_barang', $id);
-        $this->db->update('barang', $data);
-        $this->db->join('kategori_barang', 'kategori_barang.id_kategori_barang = barang.id_kategori_barang');
-        return true;
+        $this->db->where('detail_beli.id_pembelian', $id);
+        $this->db->join('pembelian as p', 'p.id_pembelian = detail_beli.id_pembelian');
+        $this->db->join('barang as b', 'b.id_barang = detail_beli.id_barang');
+
+        $query = $this->db->get('detail_beli');
+
+        return $query;
     }
 
-    public function show_kategori_barang()
+    public function show_pembelian_by_id($id)
     {
-        $this->db->select('id_kategori_barang,nama_kategori_barang');
-        $this->db->from('kategori_barang');
-        $query = $this->db->get();
-        // the query mean select cat_id,category from category
-        $data[0] = "--Select Kategori--";
-        foreach ($query->result() as $row) {
-//            $data[$row['id_provinsi']]=$row['nama_provinsi'];
-            $data[$row->id_kategori_barang] = $row->nama_kategori_barang;
-        }
-        // the fetching data from database is return
-        return $data;
+        $this->db->where('id_pembelian', $id);
+        $this->db->join('user as u', 'u.id_user = pembelian.id_user');
+        $this->db->join('user as s', 's.id_user = pembelian.id_supplier');
+
+        $query = $this->db->get('pembelian');
+
+        return $query;
     }
 
-    public function delete($id)
+    public function show_pembelian_by_no($no)
     {
-        $this->db->where('id_barang', $id);
-        $this->db->delete('barang');
+        $this->db->where('no_faktur_pembelian', $no);
+        $this->db->join('user as u', 'u.id_user = pembelian.id_user');
+        $this->db->join('user as s', 's.id_user = pembelian.id_supplier');
 
+        $query = $this->db->get('pembelian');
+
+        return $query;
     }
 
+    public function show_barang_supplier(){
+        $this->db->select('*');
+        $this->db->join('pembelian as p', 'p.id_pembelian = detail_beli.id_pembelian');
+        $this->db->join('barang as b', 'b.id_barang = detail_beli.id_barang');
+
+        $query = $this->db->get('detail_beli');
+
+        return $query;
+    }
+
+    public function show_barang_by_barang($id){
+        $this->db->where('detail_beli.id_barang', $id);
+        $this->db->join('pembelian as p', 'p.id_pembelian = detail_beli.id_pembelian');
+        $this->db->join('barang as b', 'b.id_barang = detail_beli.id_barang');
+
+        $query = $this->db->get('detail_beli');
+
+        return $query;
+    }
+
+    public function show_barang_by_supplier($id){
+        $this->db->where('id_supplier', $id);
+        $this->db->join('pembelian as p', 'p.id_pembelian = detail_beli.id_pembelian');
+        $this->db->join('barang as b', 'b.id_barang = detail_beli.id_barang');
+
+        $query = $this->db->get('detail_beli');
+
+        return $query->result();
+//        $this->db->select('*');
+//        $this->db->join('pembelian as p', 'p.id_pembelian = detail_beli.id_pembelian');
+//        $this->db->join('barang as b', 'b.id_barang = detail_beli.id_barang');
+//        $this->db->join('user as s', 's.id_user = p.id_supplier');
+//        $this->db->from('detail_beli');
+//        $query = $this->db->get();
+//        // the query mean select cat_id,category from category
+//        $data[0] = "--Select Supplier--";
+//        foreach ($query->result() as $row) {
+////            $data[$row['id_provinsi']]=$row['nama_provinsi'];
+//            $data[$row->id_supplier] = $row->nama_perusahaan;
+//        }
+//        // the fetching data from database is return
+//        return $data;
+    }
 
 } 
