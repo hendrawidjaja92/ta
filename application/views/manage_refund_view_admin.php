@@ -1,5 +1,6 @@
 <?php
 $id_user = $this->session->userdata('id_user');
+$username = $this->session->userdata('username');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -41,8 +42,7 @@ $id_user = $this->session->userdata('id_user');
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="<?= base_url() ?>index.php/admin">Home</a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">=Nama
-                        User=<span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a>
                         </li>
@@ -57,7 +57,7 @@ $id_user = $this->session->userdata('id_user');
                         <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Penjualan</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Pembelian</a></li>
                         <li class="divider"></li>
-                        <li><a href="#">Logout</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/logout">Logout</a></li>
                     </ul>
                 </li>
                 <li><a href="#">Tentang Kami</a></li>
@@ -122,6 +122,87 @@ $id_user = $this->session->userdata('id_user');
         </li>
     </ul>
     <br>
+    <?php if ($this->session->flashdata('category_success')) { ?>
+        <div class="alert alert-success"> <?= $this->session->flashdata('category_success') ?> </div>
+    <?php } ?>
+    <h3>Information Color Refund <span class="glyphicon glyphicon-info-sign"></span></h3>
+
+    <div class="col-md-4 alert-info">Pending Confirmation</div>
+    <br>
+    <div class="col-md-4 alert-success">Succes Confirmation</div>
+    <br>
+
+    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/add_refund">ADD <span
+                class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
+
+    <table class="table table-hover">
+
+        <tr style="background-color: black; color: white;">
+            <th style="background-color: black; color: white; text-align: center" >#</th>
+            <th style="background-color: black; color: white; text-align: center">No Faktur</th>
+            <th style="background-color: black; color: white; text-align: center">Tanggal Refund</th>
+            <th style="background-color: black; color: white; text-align: center">Tanggal Beli</th>
+            <th style="background-color: black; color: white; text-align: center">Total</th>
+            <th style="background-color: black; color: white; text-align: center">Pajak</th>
+            <th style="background-color: black; color: white; text-align: center">Supplier</th>
+            <th style="background-color: black; color: white; text-align: center">View</th>
+
+        </tr>
+        <?php $i = 1; ?>
+
+        <?php if ($refund->result()) { ?>
+
+            <?php foreach ($refund->result() as $r): ?>
+
+
+                <?php $data[$i] = $r->id_pembelian ?>
+                <tr
+                    class="<?= ($r->status_refund == 1) ? "alert-success" : "" ?> <?= ($r->status_refund == 2) ? "alert-danger" : "" ?> <?= ($r->status_refund == 3) ? "alert-info" : "" ?>">
+                    <td><?= $i ?></td>
+
+                    <td align="center"><?= $r->no_faktur_pembelian ?></td>
+                    <?php
+                    $originalDate = $r->tgl_refund;
+                    $ref_date = date("d - M - Y", strtotime($originalDate));
+                    ?>
+                    <td align="center"><?= $ref_date ?></td>
+                    <?php
+                    $originalDate = $r->tgl_beli;
+                    $buy_date = date("d - M - Y", strtotime($originalDate));
+                    ?>
+                    <td align="center"><?= $buy_date ?></td>
+                    <td align="right"><?= "Rp " . number_format($r->total_refund ,2,",",".") ?></td>
+                    <td align="center"><?= ($r->pajak == 0) ? "Non Pajak" : "Pajak"?></td>
+                    <?php
+                    foreach ($supplier->result() as $s) {
+                        if ($s->id_user == $r->id_supplier) {
+                            $nama_perus = $s->nama_perusahaan;
+                        }
+                    }
+                    ?>
+                    <td><?= $nama_perus ?></td>
+
+                    <td><a href="<?= base_url() ?>index.php/admin/view_data_refund/<?= $r->id_pembelian ?>/<?= $r->id_refund ?>"
+                           class="glyphicon glyphicon-cog" aria-hidden="true"> VIEW</a></td>
+
+                    <?php $i += 1; ?>
+                </tr>
+
+            <?php endforeach; ?>
+
+        <?php } else { ?>
+            <tr>
+                <td colspan="10" align="center"><b> --------------- Data is empty ---------------</b></td>
+            </tr>
+        <?php } ?>
+
+
+
+    </table>
+
+    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/add_refund">ADD <span
+                class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
+
 
 </div>
 

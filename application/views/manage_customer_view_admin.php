@@ -128,6 +128,15 @@ $username = $this->session->userdata('username');
     <?php if ($this->session->flashdata('category_success')) { ?>
         <div class="alert alert-success"> <?= $this->session->flashdata('category_success') ?> </div>
     <?php } ?>
+    <h3>Information Color <span class="glyphicon glyphicon-info-sign"></span></h3>
+
+    <div class="col-md-4 alert-info">Pending</div>
+    <br>
+    <div class="col-md-4 alert-danger">Banned</div>
+    <br>
+    <div class="col-md-4 alert-success">Active</div>
+    <br>
+    <br>
     <table class="table table-hover">
 
         <tr style="background-color: black; color: white">

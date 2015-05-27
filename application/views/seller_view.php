@@ -66,7 +66,7 @@ if($kategori == 3){
                 <button type="submit" class="btn btn-default">Cari</button>
             </form>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Home</a></li>
+                <li><a href="<?= base_url() ?>index.php/seller">Home</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">

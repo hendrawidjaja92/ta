@@ -109,3 +109,12 @@ $lang['form_validation_barang_temp']     = '<div class="col-md-4 col-md-offset-0
 $lang['form_validation_barang_temp_id']     = '<div class="col-md-4 col-md-offset-0 alert alert-danger" role="alert">
                                         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                                         <span class="sr-only">Error:</span>Enter another %s</div>';
+$lang['form_validation_jumlah_refund']     = '<div class="col-md-4 col-md-offset-0 alert alert-danger" role="alert">
+                                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                        <span class="sr-only">Error:</span>%s value not 0 or more than stock</div>';
+$lang['form_validation_nama_kategori_barang']     = '<div class="col-md-4 col-md-offset-0 alert alert-danger" role="alert">
+                                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                        <span class="sr-only">Error:</span>Enter another %s is already</div>';
+$lang['form_validation_jumlah_beli']     = '<div class="col-md-4 col-md-offset-0 alert alert-danger" role="alert">
+                                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                        <span class="sr-only">Error:</span>%s too much not already stock</div>';

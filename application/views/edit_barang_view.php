@@ -23,6 +23,7 @@ $username = $this->session->userdata('username');
 
 </head>
 <body class="cover">
+<?php foreach($pilot->result() as $pil):?>
 
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
@@ -40,24 +41,43 @@ $username = $this->session->userdata('username');
                 <button type="submit" class="btn btn-default">Cari</button>
             </form>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="<?= base_url() ?>index.php/admin">Home</a></li>
+                <?php if($pil->id_kategori_user == 1): ?>
+                    <li><a href="<?= base_url() ?>index.php/admin">Home</a></li>
+                <?php endif; ?>
+
+                <?php if($pil->id_kategori_user == 3): ?>
+                    <li><a href="<?= base_url() ?>index.php/seller">Home</a></li>
+                <?php endif; ?>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a>
-                        </li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_barang">Manage Barang</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_refund">Manage Refund</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_supplier">Manage Supplier</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_seller">Manage Seller</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_customer">Manage Customer</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_pegawai">Manage Pegawai</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/pembelian">Pembelian</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Penjualan</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Pembelian</a></li>
-                        <li class="divider"></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/logout">Logout</a></li>
+                        <?php if($pil->id_kategori_user == 1): ?>
+
+                            <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a>
+                            </li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_barang">Manage Barang</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_refund">Manage Refund</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_supplier">Manage Supplier</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_seller">Manage Seller</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_customer">Manage Customer</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_pegawai">Manage Pegawai</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/pembelian">Pembelian</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Penjualan</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Pembelian</a></li>
+                            <li class="divider"></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/logout">Logout</a></li>
+
+                        <?php endif; ?>
+
+                        <?php if($pil->id_kategori_user == 3): ?>
+                            <li><a href="<?= base_url() ?>index.php/seller/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a></li>
+                            <li><a href="<?= base_url() ?>index.php/seller/manage_barang/">Manage Barang</a></li>
+                            <li><a href="<?= base_url() ?>index.php/seller/manage_refund/">Manage Refund</a></li>
+                            <li><a href="<?= base_url() ?>index.php/seller/history_penjualan/">History Penjualan</a></li>
+                            <li class="divider"></li>
+                            <li><a href="<?= base_url() ?>index.php/seller/logout/">Logout</a></li>
+                        <?php endif; ?>
                     </ul>
                 </li>
                 <li><a href="#">Tentang Kami</a></li>
@@ -124,8 +144,17 @@ $username = $this->session->userdata('username');
     <h3 style="padding-left: 5%">EDIT Barang <span class="glyphicon glyphicon-cog" aria-hidden="true"></span></h3>
 
     <?php foreach ($barang->result() as $b): ?>
+        <?php foreach ($barang->result() as $b): ?>
 
-    <?php echo form_open_multipart('admin/edit_barang/'. $b->id_barang); ?>
+            <?php if($pil->id_kategori_user == 1): ?>
+                <?php echo form_open_multipart('admin/edit_barang/'. $b->id_barang); ?>
+
+            <?php endif; ?>
+            <?php if($pil->id_kategori_user == 3): ?>
+                <?php echo form_open_multipart('seller/edit_barang/'. $b->id_barang); ?>
+
+            <?php endif; ?>
+
 
 
     <br>
@@ -245,7 +274,20 @@ $username = $this->session->userdata('username');
         )); ?>
     </div>
     <?php echo form_error('nilai_berat'); ?>
+            <div class="col-md-9 col-md-offset-1">
+                <?php echo form_label('Nilai Volume :'); ?>
+            </div>
+            <div class="col-md-2 col-md-offset-1">
+                <?php echo form_input(array(
 
+                    'id'    => 'nilai_volume',
+                    'name'  => 'nilai_volume',
+                    'class' => 'form-control',
+                    'style' => 'text-align: right',
+                    'value' => set_value('nilai_volume', $b->nilai_volume)
+                )); ?>
+            </div>
+            <?php echo form_error('nilai_volume'); ?>
     <div class="col-md-9 col-md-offset-1">
         <?php echo form_label('Kategori Barang :'); ?>
     </div>
@@ -259,19 +301,28 @@ $username = $this->session->userdata('username');
         </select>
     </div>
     <?php echo form_error('kategori_barang'); ?>
-        <div class="col-md-9 col-md-offset-1">
-            <?php echo form_label('Status Barang :'); ?>
-        </div>
-        <div class="col-md-5 col-md-offset-1">
-            <select id="status_barang" name="status_barang" class="form-control">
-                <option value="0" <?= set_select('status_barang', '0', $b->status_barang == 0) ?>>Not Active</option>
-                <option value="1" <?= set_select('status_barang', '1', $b->status_barang == 1) ?>>Active</option>
-                <option value="2" <?= set_select('status_barang', '2', $b->status_barang == 2) ?>>Banned</option>
-            </select>
 
-            <br>
-            <br>
-        </div>
+            <?php if($pil->id_kategori_user == 1): ?>
+                <div class="col-md-9 col-md-offset-1">
+                    <?php echo form_label('Status Barang :'); ?>
+                </div>
+                <div class="col-md-5 col-md-offset-1">
+                    <select id="status_barang" name="status_barang" class="form-control">
+                        <option value="0" <?= set_select('status_barang', '0', $b->status_barang == 0) ?>>Not Active</option>
+                        <option value="1" <?= set_select('status_barang', '1', $b->status_barang == 1) ?>>Active</option>
+                        <option value="2" <?= set_select('status_barang', '2', $b->status_barang == 2) ?>>Banned</option>
+                        <option value="3" <?= set_select('status_barang', '3', $b->status_barang == 3) ?>>Pending</option>
+                    </select>
+
+                    <br>
+                    <br>
+                </div>
+
+            <?php endif; ?>
+
+
+        <?php endforeach; ?>
+        <?php endforeach; ?>
     <div class="modal-footer col-md-10 col-md-offset-1">
         <?php echo form_submit(array('id' => 'save', 'name' => 'save', 'value' => 'Save', 'class' => 'btn btn-ok')); ?>
     </div>

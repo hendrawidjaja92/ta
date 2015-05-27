@@ -22,6 +22,8 @@ class Pegawai extends CI_Controller {
         $this->load->model('kota_provinsi_model');
         $this->load->model('pegawai_model');
         $this->load->model('login_model');
+        $this->load->model('penjualan_model');
+        $this->load->model('admin_model');
     }
 
     function index(){
@@ -106,6 +108,93 @@ class Pegawai extends CI_Controller {
             $this->session->set_flashdata('category_success', 'Success update pegawai.');
             redirect('/pegawai/ubah_akun/' . $id_user, $data, true);
         }
+    }
+
+    function manage_pembayaran()
+    {
+        $data['pilot'] = $this->admin_model->show($this->session->userdata('id_user'));
+
+        $data['penjualan'] = $this->penjualan_model->show_penjualan_for_admin();
+
+        $this->load->view('manage_pembayaran_view_admin',$data);
+    }
+
+    function correct(){
+        foreach($this->penjualan_model->show_detail_penjualan_by_id($this->uri->segment(3))->result() as $a) {
+            if ($a->status_penjualan == 1 || $a->status_penjualan == 2) {
+                $this->session->set_flashdata('category_success', 'Cannot change again.');
+                redirect('/pegawai/manage_pembayaran', [], true);
+            }
+        }
+        $id_user              = $this->session->userdata('id_user');
+
+        $data = [
+            'status_penjualan' => 1,
+            'id_user' => $id_user
+        ];
+
+        foreach($this->penjualan_model->show_detail_penjualan_by_id($this->uri->segment(3))->result() as $a){
+            $id_barang = $a->id_barang;
+            $id_customer = $a->id_customer;
+
+            if($a->status_penjualan == 1 || $a->status_penjualan == 2){
+
+            }
+
+            $datalog = [
+                'nilai' => 2
+            ];
+
+            $this->customer_model->update_log_table_by_id_id($id_customer,$id_barang,$datalog);
+
+            foreach($this->barang_model->show_barang_by($id_barang)->result() as $b){
+                $jum = $b->jumlah - $a->jumlah_jual_detail;
+                $databarang = [
+                    'jumlah' =>$jum
+                ];
+
+                $this->barang_model->update_barang($id_barang,$databarang);
+            }
+
+
+        }
+
+
+
+
+        $this->penjualan_model->update_penjualan_by_id($this->uri->segment(3),$data);
+        $this->session->set_flashdata('category_success', 'Success pembayaran change correct.');
+        redirect('/pegawai/manage_pembayaran', [], true);
+    }
+
+    function false(){
+        foreach($this->penjualan_model->show_detail_penjualan_by_id($this->uri->segment(3))->result() as $a) {
+            if ($a->status_penjualan == 1 || $a->status_penjualan == 2) {
+                $this->session->set_flashdata('category_success', 'Cannot change again.');
+                redirect('/pegawai/manage_pembayaran', [], true);
+            }
+        }
+        $id_user              = $this->session->userdata('id_user');
+
+        $data = [
+            'status_penjualan' => 2,
+            'id_user' => $id_user
+        ];
+
+        foreach($this->penjualan_model->show_detail_penjualan_by_id($this->uri->segment(3))->result() as $a){
+            $id_barang = $a->id_barang;
+            $id_customer = $a->id_customer;
+
+            $datalog = [
+                'nilai' => 1
+            ];
+
+            $this->customer_model->update_log_table_by_id_id($id_customer,$id_barang,$datalog);
+        }
+
+        $this->penjualan_model->update_penjualan_by_id($this->uri->segment(3),$data);
+        $this->session->set_flashdata('category_success', 'Success pembayaran change false.');
+        redirect('/pegawai/manage_pembayaran', [], true);
     }
 
     function manage_supplier()

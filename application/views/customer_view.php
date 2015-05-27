@@ -66,13 +66,14 @@ if($kategori == 5){
                 <button type="submit" class="btn btn-default">Cari</button>
             </form>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Home</a></li>
+                <li><a href="<?= base_url() ?>index.php/customer/">Home</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="<?= base_url() ?>index.php/customer/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a></li>
                         <li><a href="<?= base_url() ?>index.php/customer/pesanan_saya/">Pesanan Saya</a></li>
                         <li><a href="<?= base_url() ?>index.php/customer/wishlist/">Wishlist</a></li>
+                        <li><a href="<?= base_url() ?>index.php/customer/pembayaran/">Pembayaran</a></li>
                         <li><a href="<?= base_url() ?>index.php/customer/refund/">Refund</a></li>
                         <li><a href="<?= base_url() ?>index.php/customer/history_belanja/">History Belanja</a></li>
                         <li class="divider"></li>
@@ -88,51 +89,29 @@ if($kategori == 5){
     <!-- /.container-fluid -->
 </nav>
 
+
 <ul class="list-group col-md-2 col-sm-2 col-xs-2">
     <li class="list-group-item kategori">
         Kategori
     </li>
-    <li class="list-group-item">
-        <span class="badge">100</span>
-        Cras justo odio
-    </li>
-    <li class="list-group-item">
-        <span class="badge">14</span>
-        Cras justo odio
-    </li>
-    <li class="list-group-item">
-        <span class="badge">4</span>
-        Cras justo odio
-    </li>
-    <li class="list-group-item">
-        <span class="badge">54</span>
-        Cras justo odio
-    </li>
-    <li class="list-group-item">
-        <span class="badge">144</span>
-        Cras justo odio
-    </li>
-    <li class="list-group-item">
-        <span class="badge">14</span>
-        Cras justo odio
-    </li>
-    <li class="list-group-item">
-        <span class="badge">141</span>
-        Cras justo odio
-    </li>
-    <li class="list-group-item">
-        <span class="badge">1</span>
-        Cras justo odio
-    </li>
-    <li class="list-group-item">
-        <span class="badge">0</span>
-        Cras justo odi
-    </li>
-    <li class="list-group-item">
-        <span class="badge">1400</span>
-        Cras justo odio
-    </li>
+    <?php foreach($kategori_barang->result() as $k): ?>
+        <?php $value = 0; ?>
+
+        <?php foreach($this->barang_model->show_value_kategori($k->id_kategori_barang)->result() as $x): ?>
+
+        <?php $value++; ?>
+        <?php endforeach; ?>
+        <a id="pilih_kategori" href="<?= base_url() . "index.php/customer/a" . $k->id_kategori_barang . "/" . $k->id_kategori_barang ?>">
+            <li id="kategori_barang_value" class="list-group-item" value="<?= $k->id_kategori_barang ?>">
+                <span class="badge"><?= $value ?></span>
+                <?= $k->nama_kategori_barang ?>
+            </li>
+        </a>
+
+    <?php endforeach; ?>
 </ul>
+
+
 
 <div class="bs-example col-md-offset-2 col-sm-offset-2 col-xs-offset-2" data-example-id="carousel-with-captions">
     <ul class="list-group judul-1">
@@ -478,6 +457,7 @@ if($kategori == 5){
             });
         });
     });
+
 
     $('.carousel').carousel({
         interval: 5000

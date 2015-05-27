@@ -58,7 +58,7 @@ $username = $this->session->userdata('username');
                         <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Penjualan</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Pembelian</a></li>
                         <li class="divider"></li>
-                        <li><a href="#">Logout</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/logout">Logout</a></li>
                     </ul>
                 </li>
                 <li><a href="#">Tentang Kami</a></li>
@@ -130,6 +130,7 @@ $username = $this->session->userdata('username');
 
     <?php if ($pembelian->result()) { ?>
 
+<?php echo form_open('admin/history_pembelian'); ?>
 
     <?php foreach ($pembelian->result() as $p): ?>
         <div class="col-md-2 col-md-offset-1">
@@ -227,6 +228,10 @@ $username = $this->session->userdata('username');
 
 
     </table>
+    <div class="modal-footer col-md-10 col-md-offset-1">
+        <?php echo form_submit(array('id' => 'back', 'name' => 'back', 'value' => 'Back', 'class' => 'btn btn-ok')); ?>
+    </div>
+    <?php echo form_close(); ?>
 </div>
 
 <nav class="modal-footer">

@@ -125,6 +125,8 @@ $username = $this->session->userdata('username');
     </ul>
     <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/add_barang">ADD <span
                 class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
+    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/manage_barang_seller">MANAGE BARANG SELLER<span
+                class="glyphicon glyphicon-cog" aria-hidden="true"></span></a></h3>
     <?php if ($this->session->flashdata('category_success')) { ?>
         <div class="alert alert-success"> <?= $this->session->flashdata('category_success') ?> </div>
     <?php } ?>
@@ -152,7 +154,7 @@ $username = $this->session->userdata('username');
 
                 <?php $data[$i] = $b->id_barang ?>
                 <tr
-                    class="<?= ($b->status_barang == 1) ? "alert-success" : "" ?> <?= ($b->status_barang == 2) ? "alert-danger" : "" ?>">
+                    class="<?= ($b->status_barang == 1) ? "alert-success" : "" ?> <?= ($b->status_barang == 2) ? "alert-danger" : "" ?> <?= ($b->status_barang == 3) ? "alert-info" : "" ?>">
                     <td><?= $i ?></td>
                     <td><img height="100px" width="150px" src="<?= base_url().$b->gambar_barang ?>"</img></td>
                     <td><?= $b->nama_barang ?></td>
@@ -162,7 +164,7 @@ $username = $this->session->userdata('username');
                     <td align="right"><?= number_format($b->jumlah,0,",",".") ?></td>
                     <td align="right"><?= "Rp " . number_format($b->harga_jual,2,",",".") ?></td>
                     <td><a href="<?= base_url() ?>index.php/admin/view_barang/<?= $b->id_barang ?>"
-                           class="glyphicon glyphicon-user" aria-hidden="true"> VIEW</a></td>
+                           class="glyphicon glyphicon-th-list" aria-hidden="true"> VIEW</a></td>
                     <td><a href="<?= base_url() ?>index.php/admin/edit_barang/<?= $b->id_barang ?>"
                            class="glyphicon glyphicon-cog" aria-hidden="true"> EDIT</a></td>
                     <td><a href="#" onclick="confDelete(<?= $b->id_barang ?>)"
@@ -184,6 +186,8 @@ $username = $this->session->userdata('username');
     </table>
     <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/add_barang">ADD <span
                 class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
+    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/manage_barang_seller">MANAGE BARANG SELLER<span
+                class="glyphicon glyphicon-cog" aria-hidden="true"></span></a></h3>
     <br>
 
 

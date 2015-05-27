@@ -1,5 +1,6 @@
 <?php
 $id_user = $this->session->userdata('id_user');
+$username = $this->session->userdata('username');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,6 +23,7 @@ $id_user = $this->session->userdata('id_user');
 
 </head>
 <body class="cover">
+<?php foreach($pilot->result() as $pil):?>
 
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
@@ -39,25 +41,46 @@ $id_user = $this->session->userdata('id_user');
                 <button type="submit" class="btn btn-default">Cari</button>
             </form>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="<?= base_url() ?>index.php/admin">Home</a></li>
+                <?php if($pil->id_kategori_user == 1): ?>
+                    <li><a href="<?= base_url() ?>index.php/admin">Home</a></li>
+                <?php endif; ?>
+
+                <?php if($pil->id_kategori_user == 2): ?>
+                    <li><a href="<?= base_url() ?>index.php/pegawai">Home</a></li>
+                <?php endif; ?>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">=Nama
-                        User=<span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a>
-                        </li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_barang">Manage Barang</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_refund">Manage Refund</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_supplier">Manage Supplier</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_seller">Manage Seller</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_customer">Manage Customer</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/manage_pegawai">Manage Pegawai</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/pembelian">Pembelian</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Penjualan</a></li>
-                        <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Pembelian</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#">Logout</a></li>
+                        <?php if($pil->id_kategori_user == 1): ?>
+
+                            <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a>
+                            </li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_barang">Manage Barang</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_refund">Manage Refund</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_supplier">Manage Supplier</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_seller">Manage Seller</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_customer">Manage Customer</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/manage_pegawai">Manage Pegawai</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/pembelian">Pembelian</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Penjualan</a></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Pembelian</a></li>
+                            <li class="divider"></li>
+                            <li><a href="<?= base_url() ?>index.php/admin/logout">Logout</a></li>
+
+                        <?php endif; ?>
+
+                        <?php if($pil->id_kategori_user == 2): ?>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/ubah_akun/<?php echo $id_user; ?>">Ubah
+                                    Akun</a></li>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/manage_pembayaran/">Manage Pembayaran</a></li>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/manage_refund/">Manage Refund</a></li>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/manage_supplier/">Manage Supplier</a></li>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/manage_seller/">Manage Seller</a></li>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/manage_customer/">Manage Customer</a></li>
+                            <li class="divider"></li>
+                            <li><a href="<?= base_url() ?>index.php/pegawai/logout">Logout</a></li>
+                        <?php endif; ?>
                     </ul>
                 </li>
                 <li><a href="#">Tentang Kami</a></li>
@@ -121,6 +144,83 @@ $id_user = $this->session->userdata('id_user');
             <h3>Manage Pembayaran</h3>
         </li>
     </ul>
+<br>
+    <?php if ($this->session->flashdata('category_success')) { ?>
+        <div class="alert alert-success"> <?= $this->session->flashdata('category_success') ?> </div>
+    <?php } ?>
+    <h3>Information Color <span class="glyphicon glyphicon-info-sign"></span></h3>
+
+    <div class="col-md-4 alert-info">Pending</div>
+    <br>
+    <div class="col-md-4 alert-danger">False</div>
+    <br>
+    <div class="col-md-4 alert-success">Correct</div>
+    <br>
+    <br>
+    <table class="table table-hover">
+
+        <tr style="background-color: black; color: white">
+            <th>#</th>
+            <th style="background-color: black; color: white; text-align: center">No Resi</th>
+            <th style="background-color: black; color: white; text-align: center">Tanggal</th>
+            <th style="background-color: black; color: white; text-align: center">Total</th>
+            <th style="background-color: black; color: white; text-align: center">Berita Pengiriman Transfer</th>
+            <th colspan="2" style="background-color: black; color: white; text-align: center">Action</th>
+
+
+        </tr>
+        <?php $i = 1; ?>
+
+        <?php if ($penjualan->result()) { ?>
+
+            <?php foreach ($penjualan->result() as $p): ?>
+
+
+                <?php $data[$i] = $p->id_penjualan ?>
+                <tr
+                    class="<?= ($p->status_penjualan == 1) ? "alert-success" : "" ?> <?= ($p->status_penjualan == 2) ? "alert-danger" : "" ?> <?= ($p->status_penjualan == 3) ? "alert-info" : "" ?>">
+                    <td><?= $i ?></td>
+                    <td align="center"><?= $p->no_resi ?></td>
+                    <?php
+                    $originalDate = $p->tgl_penjualan;
+                    $newDate = date("d - M - Y", strtotime($originalDate));
+                    $code = "id".$p->id_penjualan.date("dmy", strtotime($originalDate));
+                    ?>
+                    <td align="center"><?= $newDate ?></td>
+                    <td align="right"><p id="harga"><?= "Rp " . number_format($p->total_penjualan, 2, ",", ".") ?></p></td>
+                    <td align="center"><?= $p->berita ?></td>
+                    <?php if($pil->id_kategori_user == 1): ?>
+                        <td align="center"><a href="<?= base_url() ?>index.php/admin/correct/<?= $p->id_penjualan ?>"
+                                              class="glyphicon glyphicon-ok" aria-hidden="true"> Correct</a></td>
+                        <td align="center"><a href="<?= base_url() ?>index.php/admin/false/<?= $p->id_penjualan ?>"
+                                              class="glyphicon glyphicon-remove-sign" aria-hidden="true"> False</a></td>
+                    <?php endif; ?>
+                    <?php if($pil->id_kategori_user == 2): ?>
+                        <td align="center"><a href="<?= base_url() ?>index.php/pegawai/correct/<?= $p->id_penjualan ?>"
+                                              class="glyphicon glyphicon-ok" aria-hidden="true"> Correct</a></td>
+                        <td align="center"><a href="<?= base_url() ?>index.php/pegawai/false/<?= $p->id_penjualan ?>"
+                                              class="glyphicon glyphicon-remove-sign" aria-hidden="true"> False</a></td>
+                    <?php endif; ?>
+
+                    <?php $i += 1; ?>
+
+                </tr>
+
+            <?php endforeach; ?>
+
+
+        <?php } else { ?>
+            <tr>
+                <td colspan="10" align="center"><b> --------------- Data is empty ---------------</b></td>
+            </tr>
+        <?php } ?>
+        <?php endforeach; ?>
+
+
+
+    </table>
+
+    <br>
     <br>
 
 </div>

@@ -1,5 +1,6 @@
 <?php
 $id_user = $this->session->userdata('id_user');
+$username = $this->session->userdata('username');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -41,9 +42,11 @@ $id_user = $this->session->userdata('id_user');
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="<?= base_url() ?>index.php/admin">Home</a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">=Nama User=<span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a></li>                        <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a>
+                        </li>
+                        <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_barang">Manage Barang</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_refund">Manage Refund</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/manage_supplier">Manage Supplier</a></li>
@@ -54,7 +57,7 @@ $id_user = $this->session->userdata('id_user');
                         <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Penjualan</a></li>
                         <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Pembelian</a></li>
                         <li class="divider"></li>
-                        <li><a href="#">Logout</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/logout">Logout</a></li>
                     </ul>
                 </li>
                 <li><a href="#">Tentang Kami</a></li>
@@ -118,6 +121,60 @@ $id_user = $this->session->userdata('id_user');
             <h3>History Penjualan</h3>
         </li>
     </ul>
+
+    <br>
+    <table class="table table-hover">
+
+        <tr style="background-color: black; color: white;">
+            <th style="background-color: black; color: white; text-align: center" >#</th>
+            <th style="background-color: black; color: white; text-align: center">No Resi</th>
+            <th style="background-color: black; color: white; text-align: center">Tanggal</th>
+            <th style="background-color: black; color: white; text-align: center">Total</th>
+            <th style="background-color: black; color: white; text-align: center">Customer</th>
+
+        </tr>
+        <?php $i = 1; ?>
+
+        <?php if ($penjualan->result()) { ?>
+
+            <?php foreach ($penjualan->result() as $p): ?>
+
+
+                <?php $data[$i] = $p->id_penjualan ?>
+                <tr
+                    class="<?= ($p->status_penjualan == 1) ? "alert-success" : "" ?> <?= ($p->status_penjualan == 2) ? "alert-danger" : "" ?>">
+                    <td><?= $i ?></td>
+                    <td align="center"><?= $p->no_resi ?></td>
+
+                    <?php
+                    $originalDate = $p->tgl_penjualan;
+                    $newDate = date("d - M - Y", strtotime($originalDate));
+                    ?>
+                    <td align="center"><?= $newDate ?></td>
+                    <td align="right"><?= "Rp " . number_format($p->total_penjualan ,2,",",".") ?></td>
+                    <?php
+                    foreach ($customer->result() as $c) {
+                        if ($c->id_user == $p->id_customer) {
+                            $nama = $c->nama_user;
+                        }
+                    }
+                    ?>
+                    <td align="center"><?= $nama ?></td>
+
+                    <?php $i += 1; ?>
+                </tr>
+
+            <?php endforeach; ?>
+
+        <?php } else { ?>
+            <tr>
+                <td colspan="10" align="center"><b> --------------- Data is empty ---------------</b></td>
+            </tr>
+        <?php } ?>
+
+
+
+    </table>
     <br>
 
 </div>

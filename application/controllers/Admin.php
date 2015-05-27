@@ -26,6 +26,9 @@ class Admin extends CI_Controller
         $this->load->model('login_model');
         $this->load->model('barang_model');
         $this->load->model('pembelian_model');
+        $this->load->model('refund_model');
+        $this->load->model('penjualan_model');
+        $this->load->model('customer_model');
     }
 
     function index()
@@ -118,7 +121,89 @@ class Admin extends CI_Controller
 
     function manage_pembayaran()
     {
-        $this->load->view('manage_pembayaran_view_admin');
+        $data['pilot'] = $this->admin_model->show($this->session->userdata('id_user'));
+
+        $data['penjualan'] = $this->penjualan_model->show_penjualan_for_admin();
+
+        $this->load->view('manage_pembayaran_view_admin',$data);
+    }
+
+    function correct(){
+        foreach($this->penjualan_model->show_detail_penjualan_by_id($this->uri->segment(3))->result() as $a) {
+            if ($a->status_penjualan == 1 || $a->status_penjualan == 2) {
+                $this->session->set_flashdata('category_success', 'Cannot change again.');
+                redirect('/admin/manage_pembayaran', [], true);
+            }
+        }
+        $id_user              = $this->session->userdata('id_user');
+
+        $data = [
+            'status_penjualan' => 1,
+            'id_user' => $id_user
+        ];
+
+        foreach($this->penjualan_model->show_detail_penjualan_by_id($this->uri->segment(3))->result() as $a){
+            $id_barang = $a->id_barang;
+            $id_customer = $a->id_customer;
+
+            if($a->status_penjualan == 1 || $a->status_penjualan == 2){
+
+            }
+
+            $datalog = [
+                'nilai' => 2
+            ];
+
+            $this->customer_model->update_log_table_by_id_id($id_customer,$id_barang,$datalog);
+
+            foreach($this->barang_model->show_barang_by($id_barang)->result() as $b){
+                $jum = $b->jumlah - $a->jumlah_jual_detail;
+                $databarang = [
+                    'jumlah' =>$jum
+                ];
+
+                $this->barang_model->update_barang($id_barang,$databarang);
+            }
+
+
+        }
+
+
+
+
+        $this->penjualan_model->update_penjualan_by_id($this->uri->segment(3),$data);
+        $this->session->set_flashdata('category_success', 'Success pembayaran change correct.');
+        redirect('/admin/manage_pembayaran', [], true);
+    }
+
+    function false(){
+        foreach($this->penjualan_model->show_detail_penjualan_by_id($this->uri->segment(3))->result() as $a) {
+            if ($a->status_penjualan == 1 || $a->status_penjualan == 2) {
+                $this->session->set_flashdata('category_success', 'Cannot change again.');
+                redirect('/admin/manage_pembayaran', [], true);
+            }
+        }
+        $id_user              = $this->session->userdata('id_user');
+
+        $data = [
+            'status_penjualan' => 2,
+            'id_user' => $id_user
+        ];
+
+        foreach($this->penjualan_model->show_detail_penjualan_by_id($this->uri->segment(3))->result() as $a){
+            $id_barang = $a->id_barang;
+            $id_customer = $a->id_customer;
+
+            $datalog = [
+                'nilai' => 1
+            ];
+
+            $this->customer_model->update_log_table_by_id_id($id_customer,$id_barang,$datalog);
+        }
+
+        $this->penjualan_model->update_penjualan_by_id($this->uri->segment(3),$data);
+        $this->session->set_flashdata('category_success', 'Success pembayaran change false.');
+        redirect('/admin/manage_pembayaran', [], true);
     }
 
     function manage_barang()
@@ -142,11 +227,13 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('merk_barang', 'Merk', 'required|trim|xss_clean');
         $this->form_validation->set_rules('satuan_berat', 'Satuan Berat', 'required|trim|alpha|xss_clean');
         $this->form_validation->set_rules('nilai_berat', 'Nilai Berat', 'required|trim|numeric|xss_clean');
+        $this->form_validation->set_rules('nilai_volume', 'Nilai Volume', 'required|trim|numeric|xss_clean');
         $this->form_validation->set_rules('kategori_barang', 'Kategori Barang',
             'required|trim|callback_select_check|xss_clean');
 
         if ($this->form_validation->run() == false) {
             $data['kategoriBarang'] = $this->barang_model->show_kategori_barang();
+            $data['pilot'] = $this->admin_model->show($this->session->userdata('id_user'));
 
             $this->load->view('add_barang_view', $data);
         } else {
@@ -171,6 +258,7 @@ class Admin extends CI_Controller
                 'merk_barang'        => $this->input->post('merk_barang'),
                 'satuan_berat'       => $this->input->post('satuan_berat'),
                 'nilai_berat'        => $this->input->post('nilai_berat'),
+                'nilai_volume'        => $this->input->post('nilai_volume'),
                 'id_kategori_barang' => $this->input->post('kategori_barang'),
                 'status_barang'      => 1,
             );
@@ -204,11 +292,13 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('merk_barang', 'Merk', 'required|trim|xss_clean');
         $this->form_validation->set_rules('satuan_berat', 'Satuan Berat', 'required|trim|alpha|xss_clean');
         $this->form_validation->set_rules('nilai_berat', 'Nilai Berat', 'required|trim|numeric|xss_clean');
+        $this->form_validation->set_rules('nilai_volume', 'Nilai Volume', 'required|trim|numeric|xss_clean');
         $this->form_validation->set_rules('kategori_barang', 'Kategori Barang',
             'required|trim|callback_select_check|xss_clean');
 
         if ($this->form_validation->run() == false) {
             $data['barang'] = $this->barang_model->show_barang_by($this->uri->segment(3));
+            $data['pilot'] = $this->admin_model->show($this->session->userdata('id_user'));
 
             $data['kategoriBarang'] = $this->barang_model->show_kategori_barang();
 
@@ -232,6 +322,7 @@ class Admin extends CI_Controller
                     'merk_barang'        => $this->input->post('merk_barang'),
                     'satuan_berat'       => $this->input->post('satuan_berat'),
                     'nilai_berat'        => $this->input->post('nilai_berat'),
+                    'nilai_volume'        => $this->input->post('nilai_volume'),
                     'id_kategori_barang' => $this->input->post('kategori_barang'),
                     'status_barang'      => $this->input->post('status_barang'),
                 );
@@ -249,6 +340,7 @@ class Admin extends CI_Controller
                     'merk_barang'        => $this->input->post('merk_barang'),
                     'satuan_berat'       => $this->input->post('satuan_berat'),
                     'nilai_berat'        => $this->input->post('nilai_berat'),
+                    'nilai_volume'        => $this->input->post('nilai_volume'),
                     'id_kategori_barang' => $this->input->post('kategori_barang'),
                     'status_barang'      => $this->input->post('status_barang'),
                 );
@@ -282,16 +374,216 @@ class Admin extends CI_Controller
 
     function view_barang()
     {
+        $data['pilot'] = $this->admin_model->show($this->session->userdata('id_user'));
+
         $data['barang'] = $this->barang_model->show_barang_by($this->uri->segment(3));
 
         $this->load->view('view_barang_view', $data);
     }
 
+    function manage_barang_seller(){
+        $data['pilot'] = $this->admin_model->show($this->session->userdata('id_user'));
+
+        $data['barang'] = $this->barang_model->show_barang_by_seller();
+
+        $this->load->view('manage_barang_seller_view_admin', $data);
+    }
+
+    function add_kategori_barang(){
+        $this->form_validation->set_rules('nama_kategori_barang', 'Nama Kategori Barang', 'required|trim|callback_nama_kategori_barang|xss_clean');
+
+
+        if ($this->form_validation->run() == false) {
+
+            $data['pilot'] = $this->admin_model->show($this->session->userdata('id_user'));
+
+            $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
+
+            $this->load->view('add_kategori_barang_view', $data);
+        }else{
+
+            $data = [
+                'nama_kategori_barang' => $this->input->post('nama_kategori_barang'),
+                'status_kategori_barang' => 1,
+
+            ];
+            $this->db->insert('kategori_barang', $data);
+
+            $this->session->set_flashdata('category_success', 'Success add kategori barang.');
+            redirect('/admin/add_kategori_barang', [], true);
+        }
+
+    }
+
+    function edit_kategori_barang(){
+        $this->form_validation->set_rules('nama_kategori_barang', 'Nama Kategori Barang', 'required|trim|callback_nama_kategori_barang|xss_clean');
+
+
+        if ($this->form_validation->run() == false) {
+
+            $data['pilot'] = $this->admin_model->show($this->session->userdata('id_user'));
+
+            $data['kategori_barang'] = $this->barang_model->show_kategori_barang_by_id($this->uri->segment(3));
+
+            $this->load->view('edit_kategori_barang_view', $data);
+        }else{
+
+            foreach($this->pembelian_model->cek_kategori_barang()->result() as $a){
+                if($a->id_kategori_barang == $this->uri->segment(3)){
+                    $this->session->set_flashdata('category_success', 'Failed update kategori barang.');
+                    redirect('/admin/add_kategori_barang', [], 'refresh');
+                }
+            }
+
+            $data = [
+                'nama_kategori_barang' => $this->input->post('nama_kategori_barang'),
+                'status_kategori_barang' => $this->input->post('status_kategori_barang'),
+
+            ];
+            $this->barang_model->update_kategori_barang_by_id($this->uri->segment(3), $data);
+
+            $this->session->set_flashdata('category_success', 'Success update kategori barang.');
+            redirect('/admin/add_kategori_barang', [], true);
+        }
+
+    }
+
+    function delete_kateogri_barang(){
+
+        foreach($this->pembelian_model->cek_kategori_barang()->result() as $a){
+            if($a->id_kategori_barang == $this->uri->segment(3)){
+                $this->session->set_flashdata('category_success', 'Failed delete kategori barang.');
+                redirect('/admin/add_kategori_barang', [], 'refresh');
+            }
+        }
+
+        $id = $this->uri->segment(3);
+        $this->barang_model->delete_kategori_barang($id);
+
+        $this->session->set_flashdata('category_success', 'Success delete kategori barang.');
+        redirect('/admin/add_kategori_barang', [], 'refresh');
+    }
+
     function manage_refund()
     {
 
-        $this->load->view('manage_refund_view_admin');
+
+        $data['refund']         = $this->refund_model->show_refund();
+        $data['supplier']       = $this->supplier_model->show_supplier();
+        $this->load->view('manage_refund_view_admin',$data);
     }
+
+    function add_refund(){
+        $data['pembelian']      = $this->pembelian_model->show_pembelian_on_date();
+        $data['supplier']       = $this->supplier_model->show_supplier();
+        $this->load->view('add_refund_view',$data);
+
+    }
+
+    function view_detail_refund()
+    {
+        $data['supplier']       = $this->supplier_model->show_supplier();
+        $data['kategoriBarang'] = $this->barang_model->show_kategori_barang();
+
+        $data['pembelian'] = $this->pembelian_model->show_pembelian_by_id($this->uri->segment(3));
+        $data['detail'] = $this->pembelian_model->show_pembelian_by_id_pem($this->uri->segment(3));
+        $this->load->view('manage_refund_detail_view', $data);
+    }
+
+    function view_data_refund()
+    {
+        $data['supplier']       = $this->supplier_model->show_supplier();
+        $data['kategoriBarang'] = $this->barang_model->show_kategori_barang();
+        $data['refund']         = $this->refund_model->show_refund_by_id($this->uri->segment(4));
+
+        $data['pembelian'] = $this->pembelian_model->show_pembelian_by_id($this->uri->segment(3));
+        $data['detail'] = $this->refund_model->show_detail_refund_by_id_ref($this->uri->segment(4));
+
+        $this->load->view('view_data_refund', $data);
+    }
+
+
+
+    function refund()
+    {
+        $this->form_validation->set_rules('keterangan_refund', 'Keterangan', 'required|trim|xss_clean');
+        $this->form_validation->set_rules('jumlah_refund_detail', 'Jumlah Refund', 'required|trim|callback_jumlah_refund|callback_not_minus|numeric|xss_clean');
+
+
+        if ($this->form_validation->run() == false) {
+            $data['supplier']       = $this->supplier_model->show_supplier();
+            $data['kategoriBarang'] = $this->barang_model->show_kategori_barang();
+
+            $data['barang'] = $this->pembelian_model->show_pembelian_by_idpem_idbar($this->uri->segment(3),$this->uri->segment(4));
+
+//        die;
+            $this->load->view('manage_detail_refund_detail_view',$data);
+        }else{
+
+            $jum = $this->input->post('jumlah_refund_detail');
+            $harga = $this->input->post('harga_refund_detail');
+            $tot = $jum*$harga;
+
+            $data = [
+                'tgl_refund' => $this->input->post('tgl_refund'),
+                'total_refund' => $tot,
+                'keterangan_refund' => $this->input->post('keterangan_refund'),
+                'status_refund' => 3,
+                'id_pembelian' => $this->uri->segment(3),
+            ];
+            $this->db->insert('refund', $data);
+
+            foreach($this->refund_model->show_refund()->result() as $a){
+                $id_refund = $a->id_refund;
+            }
+
+
+            $data2 = [
+                'harga_refund_detail' => $harga,
+                'jumlah_refund_detail' => $jum,
+                'id_refund' => $id_refund,
+                'id_barang' => $this->uri->segment(4),
+            ];
+
+            $this->db->insert('detail_refund', $data2);
+
+            foreach($this->pembelian_model->show_pembelian_by_id($this->uri->segment(3))->result() as $a){
+                $totpem = $a->total_beli - $tot;
+            }
+
+
+            $dataupdate = [
+                'total_beli' => $totpem
+            ];
+            $this->pembelian_model->update_pembelian_by_id($this->uri->segment(3), $dataupdate);
+
+            foreach($this->pembelian_model->show_detail_beli($this->uri->segment(3),$this->uri->segment(4))->result() as $a){
+                $jumpem = $a->jumlah_beli_detail - $jum;
+            }
+
+
+            $dataupdate2 =[
+                'jumlah_beli_detail' => $jumpem
+            ];
+            $this->pembelian_model->update_detail_beli($this->uri->segment(3),$this->uri->segment(4),$dataupdate2);
+
+            foreach($this->barang_model->show_barang_by($this->uri->segment(4))->result() as $a){
+                $jumbarang = $a->jumlah - $jum;
+            }
+
+
+
+            $dataupdate3 = [
+                'jumlah' => $jumbarang
+            ];
+            $this->barang_model->update_barang($this->uri->segment(4),$dataupdate3);
+
+            $this->session->set_flashdata('category_success', 'Success refund barang.');
+            redirect('/admin/manage_refund', [], true);
+        }
+
+    }
+
 
     function manage_supplier()
     {
@@ -613,6 +905,8 @@ class Admin extends CI_Controller
 
     function manage_customer()
     {
+
+
         $data['customer'] = $this->admin_model->show_customer();
         $this->load->view('manage_customer_view_admin', $data);
     }
@@ -648,6 +942,7 @@ class Admin extends CI_Controller
                 $id = $this->input->post('provinsi');
             }
             $data['kotaDrop'] = $this->kota_provinsi_model->getKota($id);
+            $data['pilot'] = $this->admin_model->show($this->session->userdata('id_user'));
             $this->load->view('add_customer_view', $data);
         } else {
             $data = array(
@@ -977,6 +1272,7 @@ class Admin extends CI_Controller
                 'merk_barang_temp'         => $this->input->post('merk_barang'),
                 'satuan_berat_temp'        => $this->input->post('satuan_berat'),
                 'nilai_berat_temp'         => $this->input->post('nilai_berat'),
+                'nilai_volume_temp'         => $this->input->post('nilai_volume'),
                 'status_barang_temp'       => 1,
                 'id_kategori_barang_temp'  => $this->input->post('kategori_barang'),
                 'id_supplier'              => $this->input->post('supplier'),
@@ -1010,6 +1306,7 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('merk_barang', 'Merk', 'required|trim|xss_clean');
         $this->form_validation->set_rules('satuan_berat', 'Satuan Berat', 'required|trim|alpha|xss_clean');
         $this->form_validation->set_rules('nilai_berat', 'Nilai Berat', 'required|trim|numeric|xss_clean');
+        $this->form_validation->set_rules('nilai_volume', 'Nilai Volume', 'required|trim|numeric|xss_clean');
         $this->form_validation->set_rules('kategori_barang', 'Kategori Barang',
             'required|trim|callback_select_check|xss_clean');
 
@@ -1044,6 +1341,7 @@ class Admin extends CI_Controller
                 'merk_barang_temp'         => $this->input->post('merk_barang'),
                 'satuan_berat_temp'        => $this->input->post('satuan_berat'),
                 'nilai_berat_temp'         => $this->input->post('nilai_berat'),
+                'nilai_volume_temp'         => $this->input->post('nilai_volume'),
                 'status_barang_temp'       => 1,
                 'id_kategori_barang_temp'  => $this->input->post('kategori_barang'),
                 'id_supplier'              => $this->input->post('supplier'),
@@ -1125,6 +1423,7 @@ class Admin extends CI_Controller
             "</tr>";
 
             $q++;
+
         }
 
         $output .= "</table>";
@@ -1241,6 +1540,7 @@ class Admin extends CI_Controller
                     'merk_barang'        => $a->merk_barang_temp,
                     'satuan_berat'       => $a->satuan_berat_temp,
                     'nilai_berat'        => $a->nilai_berat_temp,
+                    'nilai_volume'        => $a->nilai_volume_temp,
                     'status_barang'      => $a->status_barang_temp,
                     'id_kategori_barang' => $a->id_kategori_barang_temp,
                 ];
@@ -1388,6 +1688,7 @@ class Admin extends CI_Controller
                     'merk_barang'        => $a->merk_barang_temp,
                     'satuan_berat'       => $a->satuan_berat_temp,
                     'nilai_berat'        => $a->nilai_berat_temp,
+                    'nilai_volume'        => $a->nilai_volume_temp,
                     'status_barang'      => $a->status_barang_temp,
                     'id_kategori_barang' => $a->id_kategori_barang_temp,
                 ];
@@ -1635,8 +1936,11 @@ class Admin extends CI_Controller
 
     function history_penjualan()
     {
+        $data['penjualan'] = $this->penjualan_model->show_penjualan_correct();
 
-        $this->load->view('history_penjualan_view_admin');
+        $data['customer']       = $this->customer_model->show_customer();
+
+        $this->load->view('history_penjualan_view_admin',$data);
     }
 
     function history_pembelian()
@@ -1702,7 +2006,7 @@ class Admin extends CI_Controller
         $value
     ) {
 
-        if ($value < 0) {
+        if ($value <= 0) {
             return false;
         }
         return true;
@@ -1789,6 +2093,33 @@ class Admin extends CI_Controller
                 }
 
 
+            }
+        }
+        return true;
+    }
+
+    public function jumlah_refund($value){
+        if($value == 0){
+            return false;
+        }
+        foreach($this->pembelian_model->show_pembelian_by_idpem_idbar($this->uri->segment(3),$this->uri->segment(4))->result() as $a){
+            if($value > $a->jumlah_beli_detail){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function nama_kategori_barang($str){
+        foreach($this->barang_model->show_kategori_barang_by_id($this->uri->segment(3))->result() as $a){
+            if(strtolower($a->nama_kategori_barang) == strtolower($str)){
+                return true;
+            }
+        }
+
+        foreach($this->barang_model->show_kategori_barang_table()->result() as $a){
+            if(strtolower($a->nama_kategori_barang) == strtolower($str)){
+                return false;
             }
         }
         return true;

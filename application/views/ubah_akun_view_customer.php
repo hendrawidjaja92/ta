@@ -60,6 +60,7 @@
                         <li><a href="<?= base_url() ?>index.php/customer/ubah_akun/<?php echo $u->id_user; ?>">Ubah Akun</a></li>
                         <li><a href="<?= base_url() ?>index.php/customer/pesanan_saya/">Pesanan Saya</a></li>
                         <li><a href="<?= base_url() ?>index.php/customer/wishlist/">Wishlist</a></li>
+                        <li><a href="<?= base_url() ?>index.php/customer/pembayaran/">Pembayaran</a></li>
                         <li><a href="<?= base_url() ?>index.php/customer/refund/">Refund</a></li>
                         <li><a href="<?= base_url() ?>index.php/customer/history_belanja/">History Belanja</a></li>
                         <li class="divider"></li>

@@ -352,7 +352,20 @@ $username = $this->session->userdata('username');
     )); ?>
 </div>
 <?php echo form_error('nilai_berat'); ?>
+<div class="col-md-9 col-md-offset-1">
+    <?php echo form_label('Nilai Volume :'); ?>
+</div>
+<div class="col-md-2 col-md-offset-1">
+    <?php echo form_input(array(
 
+        'id'    => 'nilai_volume',
+        'name'  => 'nilai_volume',
+        'class' => 'form-control',
+        'style' => 'text-align: right',
+        'value' => set_value('nilai_volume', '')
+    )); ?>
+</div>
+<?php echo form_error('nilai_volume'); ?>
 <div class="col-md-9 col-md-offset-1">
     <?php echo form_label('Kategori Barang :'); ?>
 </div>

@@ -21,10 +21,16 @@ class Customer extends CI_Controller {
         $this->load->model('kota_provinsi_model');
         $this->load->model('customer_model');
         $this->load->model('login_model');
+        $this->load->model('barang_model');
+        $this->load->model('penjualan_model');
+        $this->load->model('refund_cus_model');
     }
 
     function index(){
-        $this->load->view('customer_view', array('logged_in_customer' => $this->logged_in_customer));
+
+        $data = array('logged_in_customer' => $this->logged_in_customer);
+        $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
+        $this->load->view('customer_view', $data);
 
     }
 
@@ -111,6 +117,434 @@ class Customer extends CI_Controller {
 
     }
 
+    function buy_customer(){
+        $id_user = $this->session->userdata('id_user');
+        $tot = 0;
+
+        if($this->customer_model->cart_table($id_user)->result()){
+            foreach($this->customer_model->cart_table($id_user)->result() as $a){
+                $tot += $a->harga_belanja * $a->jumlah_belanja;
+
+            }
+            $date = date('Y-m-d');
+
+            $data = [
+                'tgl_penjualan' => $date,
+                'total_penjualan' => $tot,
+                'status_penjualan' => 0,
+                'id_customer' => $id_user,
+            ];
+
+            $this->db->insert('penjualan', $data);
+
+
+            foreach($this->penjualan_model->show_penjualan_by_idcus($id_user)->result() as $a){
+                $id_penjualan = $a->id_penjualan;
+
+            }
+
+
+            foreach($this->customer_model->cart_table($id_user)->result() as $a){
+                $data2 = [
+                    'harga_jual_detail' => $a->harga_belanja,
+                    'jumlah_jual_detail' => $a->jumlah_belanja,
+                    'id_penjualan' => $id_penjualan,
+                    'id_barang' => $a->id_barang,
+                ];
+
+                $this->db->insert('detail_pesanan', $data2);
+
+                $this->customer_model->delete_cart($id_user,$a->id_barang);
+            }
+            $this->session->set_flashdata('category_success', 'Success belanja barang.');
+            redirect('/customer/pesanan_saya/', [], true);
+        }else{
+            $this->session->set_flashdata('category_success', 'Failed belanja barang.');
+            redirect('/customer/pesanan_saya/', [], true);
+        }
+
+
+
+
+    }
+
+    function view_detail_barang(){
+        $data['barang'] = $this->barang_model->show_barang_by($this->uri->segment(3));
+        $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
+
+        $this->load->view('view_detail_barang_customer', $data);
+
+    }
+
+    function wishlist(){
+        $id_user = $this->session->userdata('id_user');
+        $data['wish'] = $this->customer_model->wishlist_table($id_user);
+        $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
+
+        $this->load->view('wishlist_customer_view', $data);
+
+
+    }
+
+    function add_wishlist(){
+        $date = date('Y-m-d');
+        $id_user = $this->session->userdata('id_user');
+
+        $data = [
+            'tgl_wishlist' => $date,
+            'id_user' => $id_user,
+            'id_barang' => $this->uri->segment(3),
+        ];
+
+        $this->db->insert('wishlist', $data);
+        $this->session->set_flashdata('category_success', 'Success add wishlist.');
+        redirect('/customer/wishlist', [], true);
+
+    }
+    function un_wishlist(){
+        $date = date('Y-m-d');
+        $id_user = $this->session->userdata('id_user');
+
+        $data = [
+            'tgl_wishlist' => $date,
+            'id_user' => $id_user,
+            'id_barang' => $this->uri->segment(3),
+        ];
+
+        $this->customer_model->delete_wishlist($id_user,$this->uri->segment(3));
+        $this->session->set_flashdata('category_success', 'Success delete wishlist.');
+        redirect('/customer/wishlist', [], true);
+
+    }
+
+    function add_cart(){
+        $id_user = $this->session->userdata('id_user');
+
+        if($this->customer_model->cart_join_barang($id_user,$this->uri->segment(3))->result()){
+            redirect('/customer/pesanan_saya', [], true);
+        }
+
+        foreach($this->barang_model->show_barang_by($this->uri->segment(3))->result() as $a){
+            $harga = $a->harga_jual;
+        }
+
+        $data = [
+            'harga_belanja' => $harga,
+            'jumlah_belanja' => 1,
+            'id_user' => $id_user,
+            'id_barang' => $this->uri->segment(3),
+
+        ];
+
+        $this->db->insert('keranjang_belanja', $data);
+        $this->add_lihat_cart();
+        $this->session->set_flashdata('category_success', 'Success add cart.');
+        redirect('/customer/pesanan_saya', [], true);
+
+
+    }
+
+
+
+    function pesanan_saya(){
+        $id_user = $this->session->userdata('id_user');
+
+        $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
+        $data['cart'] = $this->customer_model->cart_table($id_user);
+
+        $data['rekomen'] = $this->customer_model->log_table_all();
+        $x=0;
+
+
+
+        foreach($this->customer_model->log_table_all()->result() as $a){
+//            for($x = 0 ; $x < 999 ; $x++){
+
+//                foreach($this->customer_model->log_table_distinct()->result() as $z){
+////                    foreach($this->customer_model->log_table_value($z->id_user)->result() as $p) {
+//
+//                    $s_id = 0;
+//                        foreach ($this->customer_model->log_table_all_by_id($z->id_user)->result() as $b) {
+//
+//                            if ($b->id_user != $id_user && $a->id_barang == $b->id_barang) {
+//
+//                                var_dump($b->id_user);
+                                $data[$a->id_user][$a->id_barang] = $a->nilai;
+//                                var_dump("==");
+//
+//                                var_dump($b->nama_user);
+
+                                //                        var_dump($a->nilai);
+//                                var_dump($b->id_barang);
+
+
+                                //                        var_dump($b->nilai);
+                                //                        $data[$x] += $a->nilai * $b->nilai;
+//                            }
+//                        }
+//                    }
+//                    }
+//                    var_dump($data[$id_user][$a->id_barang]);
+
+//                }
+
+
+
+        }
+
+        foreach($this->customer_model->log_table_distinct()->result() as $z) {
+            foreach ($this->customer_model->log_table_all_by_id($z->id_user)->result() as $b) {
+                var_dump($b->nama_user);
+                var_dump($data[$b->id_user][$b->id_barang]);
+            }
+        }
+
+
+
+
+
+        $this->load->view('cart_customer_view', $data);
+
+    }
+
+    function un_cart(){
+        $id_user = $this->session->userdata('id_user');
+
+        $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
+        $data['cart'] = $this->customer_model->cart_table($id_user);
+
+
+        $this->customer_model->delete_cart($id_user,$this->uri->segment(3));
+        $this->session->set_flashdata('category_success', 'Success delete cart.');
+        redirect('/customer/pesanan_saya', [], true);
+
+    }
+
+    function edit_cart(){
+        $this->form_validation->set_rules('jumlah_belanja', 'Jumlah Belanja', 'required|trim|callback_jumlah_beli|callback_not_minus|numeric|xss_clean');
+
+        if ($this->form_validation->run() == false) {
+            $id_user                 = $this->session->userdata('id_user');
+            $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
+
+            $data['cart'] = $this->customer_model->cart_join_barang($id_user, $this->uri->segment(3));
+            $this->load->view('edit_cart_view', $data);
+
+        }else {
+            $dataupdate = [
+                'jumlah_belanja' => $this->input->post('jumlah_belanja'),
+            ];
+            $id_user                 = $this->session->userdata('id_user');
+
+            $this->customer_model->update_cart($id_user,$this->uri->segment(3),$dataupdate);
+            $this->session->set_flashdata('category_success', 'Success update cart.');
+            redirect('/customer/pesanan_saya', [], true);
+        }
+
+    }
+
+
+    function add_lihat(){
+        $id_user                 = $this->session->userdata('id_user');
+
+        if($this->customer_model->log_table_by_id_id($id_user,$this->uri->segment(3))->result()){
+            redirect('/customer/view_detail_barang/'.$this->uri->segment(3), [], true);
+        }else{
+            $data = [
+                'nilai' => 1,
+                'id_user' => $id_user,
+                'id_barang' => $this->uri->segment(3),
+            ];
+
+            $this->db->insert('log', $data);
+            redirect('/customer/view_detail_barang/'.$this->uri->segment(3), [], true);
+
+        }
+
+    }
+
+    function add_lihat_cart(){
+        $id_user                 = $this->session->userdata('id_user');
+
+        if($this->customer_model->log_table_by_id_id($id_user,$this->uri->segment(3))->result()){
+            redirect('/customer/pesanan_saya/'.$this->uri->segment(3), [], true);
+        }else{
+            $data = [
+                'nilai' => 1,
+                'id_user' => $id_user,
+                'id_barang' => $this->uri->segment(3),
+            ];
+
+            $this->db->insert('log', $data);
+            redirect('/customer/pesanan_saya/', [], true);
+
+        }
+
+    }
+
+    function pembayaran(){
+        $id_user                 = $this->session->userdata('id_user');
+        $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
+
+        $data['penjualan'] = $this->penjualan_model->show_penjualan_by_idcus($id_user);
+        $this->load->view('pembayaran_customer_view', $data);
+
+    }
+
+    function bayar(){
+        $id_user                 = $this->session->userdata('id_user');
+
+        foreach($this->penjualan_model->show_penjualan_by_idcus_id_penj($id_user,$this->uri->segment(3))->result() as $a){
+            if($a->status_penjualan == 1){
+                $this->session->set_flashdata('category_success', 'Pembayaran sudah selesai.');
+                redirect('/customer/pembayaran', [], true);
+            }else if($a->status_penjualan == 2){
+                $this->session->set_flashdata('category_success', 'Terjadi kesalahan jumlah pembayaran / berita transfer hubungi customer service.');
+                redirect('/customer/pembayaran', [], true);
+            }
+        }
+
+        $data = [
+            'berita' => $this->uri->segment(4),
+            'status_penjualan' => 3,
+        ];
+
+        $this->penjualan_model->update_penjualan_by_id($this->uri->segment(3),$data);
+        $this->session->set_flashdata('category_success', 'Success pembayaran wait confirmation 1 x 24 hours.');
+        redirect('/customer/pembayaran', [], true);
+    }
+
+    function history_belanja(){
+        $id_user                 = $this->session->userdata('id_user');
+
+        $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
+        $data['penjualan'] = $this->penjualan_model->show_history_penjualan_by_id($id_user);
+
+        $this->load->view('history_belanja_view',$data);
+
+    }
+
+    function refund(){
+        $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
+        $data['refund']         = $this->refund_cus_model->show_refund();
+
+        $this->load->view('manage_refund_view_customer', $data);
+
+    }
+
+    function add_refund(){
+        $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
+
+        $data['penjualan']      = $this->penjualan_model->show_penjualan_on_date();
+        $this->load->view('add_refund_view_customer',$data);
+
+    }
+
+    function view_detail_refund()
+    {
+        $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
+        $data['kategoriBarang'] = $this->barang_model->show_kategori_barang();
+
+        $data['penjualan']      = $this->penjualan_model->show_penjualan_by_id($this->uri->segment(3));
+        $data['detail']         = $this->penjualan_model->show_penjualan_by_id_pen($this->uri->segment(3));
+        $this->load->view('manage_refund_detail_view_customer', $data);
+    }
+
+    function view_data_refund()
+    {
+        $data['kategoriBarang'] = $this->barang_model->show_kategori_barang();
+        $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
+
+        $data['refund']         = $this->refund_cus_model->show_refund_by_id($this->uri->segment(4));
+
+        $data['penjualan']      = $this->penjualan_model->show_penjualan_by_id($this->uri->segment(3));
+        $data['detail']         = $this->refund_cus_model->show_detail_refund_by_id_ref($this->uri->segment(4));
+
+        $this->load->view('view_data_refund_customer', $data);
+    }
+
+    function refund_c()
+    {
+        $this->form_validation->set_rules('keterangan_refund_cus', 'Keterangan', 'required|trim|xss_clean');
+        $this->form_validation->set_rules('jumlah_refund_detail_cus', 'Jumlah Refund', 'required|trim|callback_jumlah_refund|callback_not_minus|numeric|xss_clean');
+
+
+        if ($this->form_validation->run() == false) {
+            $data['kategoriBarang'] = $this->barang_model->show_kategori_barang();
+            $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
+
+            $data['barang'] = $this->penjualan_model->show_penjualan_by_idpen_idbar($this->uri->segment(3),$this->uri->segment(4));
+
+//        die;
+            $this->load->view('manage_detail_refund_detail_view_customer',$data);
+        }else{
+
+            $jum = $this->input->post('jumlah_refund_detail_cus');
+            $harga = $this->input->post('harga_refund_detail_cus');
+            $tot = $jum*$harga;
+
+            $data = [
+                'tgl_refund_cus' => $this->input->post('tgl_refund_cus'),
+                'total_refund_cus' => $tot,
+                'keterangan_refund_cus' => $this->input->post('keterangan_refund_cus'),
+                'status_refund_cus' => 3,
+                'id_penjualan' => $this->uri->segment(3),
+            ];
+            $this->db->insert('refund_customer', $data);
+
+            foreach($this->refund_cus_model->show_refund()->result() as $a){
+                $id_refund = $a->id_refund_cus;
+            }
+
+
+            $data2 = [
+                'harga_refund_detail_cus' => $harga,
+                'jumlah_refund_detail_cus' => $jum,
+                'id_refund_cus' => $id_refund,
+                'id_barang' => $this->uri->segment(4),
+            ];
+
+            $this->db->insert('detail_refund_cus', $data2);
+
+            foreach($this->penjualan_model->show_penjualan_by_id($this->uri->segment(3))->result() as $a){
+                $totjual = $a->total_penjualan - $tot;
+            }
+
+
+            $dataupdate = [
+                'total_penjualan' => $totjual
+            ];
+            $this->penjualan_model->update_penjualan_by_id($this->uri->segment(3), $dataupdate);
+
+            foreach($this->penjualan_model->show_detail_jual($this->uri->segment(3),$this->uri->segment(4))->result() as $a){
+                $jumpen = $a->jumlah_jual_detail - $jum;
+            }
+
+
+            $dataupdate2 =[
+                'jumlah_jual_detail' => $jumpen
+            ];
+            $this->penjualan_model->update_detail_jual($this->uri->segment(3),$this->uri->segment(4),$dataupdate2);
+
+
+            $this->session->set_flashdata('category_success', 'Success refund barang.');
+            redirect('/customer/refund', [], true);
+        }
+
+    }
+
+    function a3(){
+
+        $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
+        $data['barang'] = $this->barang_model->show_value_kategori($this->uri->segment(3));
+
+        $this->load->view('kategori_baju_view', $data);
+
+    }
+
+
+
+
     //===============================================================================================================
     //===============================================================================================================
     //===============================================================================================================
@@ -155,7 +589,7 @@ class Customer extends CI_Controller {
         $value
     ) {
 
-        if ($value < 0) {
+        if ($value <= 0) {
             return false;
         }
         return true;
@@ -172,5 +606,26 @@ class Customer extends CI_Controller {
         }
         return true;
 
+    }
+
+    public function jumlah_beli($value){
+        foreach($this->barang_model->show_barang_by($this->uri->segment(3))->result() as $a){
+            if($a->jumlah < $value){
+                return false;
+            }
+        }
+
+        return true;
+    }
+    public function jumlah_refund($value){
+        if($value == 0){
+            return false;
+        }
+        foreach($this->penjualan_model->show_penjualan_by_idpen_idbar($this->uri->segment(3),$this->uri->segment(4))->result() as $a){
+            if($value > $a->jumlah_jual_detail){
+                return false;
+            }
+        }
+        return true;
     }
 }

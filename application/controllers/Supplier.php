@@ -21,6 +21,9 @@ class Supplier extends CI_Controller {
         $this->load->model('kota_provinsi_model');
         $this->load->model('supplier_model');
         $this->load->model('login_model');
+        $this->load->model('pembelian_model');
+        $this->load->model('barang_model');
+        $this->load->model('refund_model');
     }
 
     function index(){
@@ -108,9 +111,53 @@ class Supplier extends CI_Controller {
             redirect('/supplier/ubah_akun/' . $id_user, $data, true);
         }
 
-
     }
 
+    function history_penjualan()
+    {
+        $id_user = $this->session->userdata('id_user');
+        $data['pembelian'] = $this->pembelian_model->show_pembelian_by_idsup($id_user);
+        $data['supplier']  = $this->supplier_model->show_supplier();
+        $this->load->view('history_penjualan_view_supplier', $data);
+    }
+
+    function view_penjualan()
+    {
+        $data['supplier']       = $this->supplier_model->show_supplier();
+        $data['kategoriBarang'] = $this->barang_model->show_kategori_barang();
+        $data['pembelian'] = $this->pembelian_model->show_pembelian_by_id($this->uri->segment(3));
+        $data['detail'] = $this->pembelian_model->show_pembelian_by_id_pem($this->uri->segment(3));
+
+        $this->load->view('history_detail_penjualan_view_supplier', $data);
+    }
+
+    function manage_refund(){
+        $id_user = $this->session->userdata('id_user');
+
+        $data['refund']         = $this->refund_model->show_refund_by_idsup($id_user);
+        $data['supplier']       = $this->supplier_model->show_supplier();
+        $this->load->view('manage_refund_view_supplier',$data);
+    }
+    function view_data_refund()
+    {
+        $data['supplier']       = $this->supplier_model->show_supplier();
+        $data['kategoriBarang'] = $this->barang_model->show_kategori_barang();
+        $data['refund']         = $this->refund_model->show_refund_by_id($this->uri->segment(4));
+
+        $data['pembelian'] = $this->pembelian_model->show_pembelian_by_id($this->uri->segment(3));
+        $data['detail'] = $this->refund_model->show_detail_refund_by_id_ref($this->uri->segment(4));
+
+        $this->load->view('view_data_refund_supplier', $data);
+    }
+    function edit_refund()
+    {
+        $datarefund = [
+            'status_refund' => 1
+        ];
+        $this->refund_model->update_refund_by_id($this->uri->segment(4),$datarefund);
+        $this->session->set_flashdata('category_success', 'Success update refund.');
+        redirect('/supplier/manage_refund/', [], true);
+    }
     //===============================================================================================================
     //===============================================================================================================
     //===============================================================================================================
