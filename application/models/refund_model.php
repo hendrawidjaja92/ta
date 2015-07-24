@@ -72,7 +72,7 @@ class refund_model extends CI_Model{
         $query = $this->db->get('detail_refund_cus');
 
         return $query;
-    }
+    } 
 
     public function show_refund_customer_by_id($id){
         $this->db->where('id_refund_cus', $id);
