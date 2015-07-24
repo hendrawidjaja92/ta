@@ -134,6 +134,8 @@ $username = $this->session->userdata('username');
 
     <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/add_refund">ADD <span
                 class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
+    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/manage_refund_customer">MANAGE REFUND CUSTOMER <span
+                class="glyphicon glyphicon-cog" aria-hidden="true"></span></a></h3>
 
     <table class="table table-hover">
 
@@ -202,7 +204,8 @@ $username = $this->session->userdata('username');
 
     <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/add_refund">ADD <span
                 class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
-
+    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/admin/manage_refund_customer">MANAGE REFUND CUSTOMER <span
+                class="glyphicon glyphicon-cog" aria-hidden="true"></span></a></h3>
 
 </div>
 

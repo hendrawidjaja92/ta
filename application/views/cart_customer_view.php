@@ -161,12 +161,56 @@ $username = $this->session->userdata('username');
 
 
     </table>
-    <h3 align="right" style="padding-right: 5%"><a href="<?= base_url() ?>index.php/customer/buy_customer">BUY <span
-                class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span></a></h3>
+    <?php if ($cart->result()) : ?>
+
+    <h3 align="right" style="padding-right: 5%"><a href="<?= base_url() ?>index.php/customer/pengiriman">NEXT <span
+                class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span></a></h3>
+    <?php endif; ?>
+
     <br>
 
+    <ul class="list-group judul-1">
+        <li class="list-group-item judul-1">
+            <h3>Recommended</h3>
+        </li>
+    </ul>
+    <div class="bs-example" data-example-id="thumbnails-with-custom-content">
+        <?php foreach($this->customer_model->rekomendasi($id_user)->result() as $b): ?>
+
+            <div class="col-sm-6 col-md-4">
+                <div class="thumbnail">
+                    <img data-src="holder.js/100%x200" alt="100%x200" src="<?= base_url() . $b->gambar_barang ?>"
+                         data-holder-rendered="true" style="height: 200px; width: 100%; display: block;" />
+
+                    <div class="caption">
+                        <h3 id="thumbnail-label"><?= $b->nama_barang ?><a class="anchorjs-link" href="#thumbnail-label"><span
+                                    class="anchorjs-icon"></span></a></h3>
+
+                        <p><strong><?= "Rp " . number_format($b->harga_jual, 2, ",", ".") ?></strong></p>
+                        <p><strong><?= $b->merk_barang ?></strong></p>
+                        <p><a href="<?= base_url(). "index.php/customer/add_lihat/".$b->id_barang ?>">View Detail</a></p>
+
+                        <?php
+                        if($this->customer_model->cart($id_user,$b->id_barang)->result()){ ?>
+                    <p><a href="#" class="btn btn-success" role="button">Cart</a>
+                    <?php }else{ ?>
+                        <p><a href="<?= base_url(). "index.php/customer/add_cart/". $b->id_barang ?>" class="btn btn-warning" role="button")">Cart</a>
+                            <?php } ?>
+
+                            <?php
+                            if($this->customer_model->wishlist($id_user,$b->id_barang)->result()){ ?>
+                            <a href="<?= base_url(). "index.php/customer/un_wishlist/". $b->id_barang?>" class="btn btn-danger" role="button">Wishlist</a></p>
+                    <?php }else{ ?>
+                        <a href="<?= base_url(). "index.php/customer/add_wishlist/". $b->id_barang?>" class="btn btn-default" role="button">Wishlist</a></p>
+                    <?php } ?>
 
 
+
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
 
 </div>
 

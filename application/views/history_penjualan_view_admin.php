@@ -134,6 +134,7 @@ $username = $this->session->userdata('username');
 
         </tr>
         <?php $i = 1; ?>
+        <?php $gtot = 0; ?>
 
         <?php if ($penjualan->result()) { ?>
 
@@ -151,7 +152,7 @@ $username = $this->session->userdata('username');
                     $newDate = date("d - M - Y", strtotime($originalDate));
                     ?>
                     <td align="center"><?= $newDate ?></td>
-                    <td align="right"><?= "Rp " . number_format($p->total_penjualan ,2,",",".") ?></td>
+                    <td align="right"><?= "Rp " . number_format($p->jumlah_jual_detail*$p->harga_jual_detail ,2,",",".") ?></td>
                     <?php
                     foreach ($customer->result() as $c) {
                         if ($c->id_user == $p->id_customer) {
@@ -161,11 +162,16 @@ $username = $this->session->userdata('username');
                     ?>
                     <td align="center"><?= $nama ?></td>
 
+                    <?php $gtot += $p->jumlah_jual_detail*$p->harga_jual_detail; ?>
                     <?php $i += 1; ?>
                 </tr>
 
             <?php endforeach; ?>
-
+<tr>
+    <th style="background-color: black; color: white; text-align: center" colspan="3" align="center">GRAND TOTAL</th>
+    <th style="background-color: black; color: white; text-align: right" align="right"><?=  "Rp " . number_format($gtot,2,",",".") ?></th>
+    <th style="background-color: black; color: white; text-align: right" align="right"></th>
+</tr>
         <?php } else { ?>
             <tr>
                 <td colspan="10" align="center"><b> --------------- Data is empty ---------------</b></td>

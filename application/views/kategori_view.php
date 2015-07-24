@@ -77,6 +77,10 @@
 
             <?php $value++; ?>
         <?php endforeach; ?>
+        <?php foreach($this->barang_model->show_value_kategori($this->uri->segment(3))->result() as $x): ?>
+
+            <?php $nama_kategori = $x->nama_kategori_barang; ?>
+        <?php endforeach; ?>
         <a id="pilih_kategori" href="<?= base_url() . "index.php/customer/a" . $k->id_kategori_barang . "/" . $k->id_kategori_barang ?>">
             <li id="kategori_barang_value" class="list-group-item" value="<?= $k->id_kategori_barang ?>">
                 <span class="badge"><?= $value ?></span>
@@ -90,7 +94,7 @@
 <nav class="col-md-offset-2 col-sm-offset-2 col-xs-offset-2">
 <ul class="list-group judul-2">
     <li class="list-group-item judul-1">
-        <h3>Baju</h3>
+        <h3><?= $nama_kategori; ?></h3>
     </li>
 </ul>
 <div class="bs-example" data-example-id="thumbnails-with-custom-content">

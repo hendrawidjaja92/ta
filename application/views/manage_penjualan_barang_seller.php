@@ -112,13 +112,9 @@ $username = $this->session->userdata('username');
      data-example-id="carousel-with-captions">
     <ul class="list-group judul-1">
         <li class="list-group-item judul-1">
-            <h3>Manage Barang</h3>
+            <h3>Manage Penjualan</h3>
         </li>
     </ul>
-    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/seller/add_barang">ADD <span
-                class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
-    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/seller/penjualan">PENJUALAN <span
-                class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></a></h3>
     <?php if ($this->session->flashdata('category_success')) { ?>
         <div class="alert alert-success"> <?= $this->session->flashdata('category_success') ?> </div>
     <?php } ?>
@@ -126,49 +122,47 @@ $username = $this->session->userdata('username');
 
     <div class="col-md-4 alert-info">Pending Confirmation</div>
     <br>
-    <div class="col-md-4 alert-success">Succes Confirmation</div>
-    <br>
+
     <br>
     <table class="table table-hover">
 
         <tr style="background-color: black; color: white">
             <th>#</th>
+            <th>No Resi</th>
             <th>Gambar Barang</th>
             <th>Nama Barang</th>
             <th>Merk</th>
             <th>Kategori Barang</th>
-            <th>Stok</th>
-            <th>Harga Jual</th>
-            <th>View</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            <th>Jumlah</th>
+            <th>Kota Pengiriman</th>
+            <th>Nama Jalan Pengiriman</th>
+            <th>Action</th>
 
         </tr>
         <?php $i = 1; ?>
 
-        <?php if ($barang->result()) { ?>
+        <?php if ($penjualan->result()) { ?>
 
-            <?php foreach ($barang->result() as $b): ?>
+            <?php foreach ($penjualan->result() as $p): ?>
 
 
-                <?php $data[$i] = $b->id_barang ?>
+
+                <?php $data[$i] = $p->id_barang ?>
                 <tr
-                    class="<?= ($b->status_barang == 1) ? "alert-success" : "" ?> <?= ($b->status_barang == 2) ? "alert-danger" : "" ?> <?= ($b->status_barang == 3) ? "alert-info" : "" ?>">
+                    class="<?= ($p->no_resi == 0) ? "alert-info" : "" ?>">
                     <td><?= $i ?></td>
-                    <td><img height="100px" width="150px" src="<?= base_url().$b->gambar_barang ?>"</img></td>
-                    <td><?= $b->nama_barang ?></td>
-                    <td><?= $b->merk_barang ?></td>
-                    <td><?= $b->nama_kategori_barang ?></td>
+                    <td><?= $p->no_resi ?></td>
+                    <td><img height="100px" width="150px" src="<?= base_url().$p->gambar_barang ?>"</img></td>
+                    <td><?= $p->nama_barang ?></td>
+                    <td><?= $p->merk_barang ?></td>
+                    <td><?= $p->nama_kategori_barang ?></td>
 
-                    <td align="right"><?= number_format($b->jumlah,0,",",".") ?></td>
-                    <td align="right"><?= "Rp " . number_format($b->harga_jual,2,",",".") ?></td>
-                    <td><a href="<?= base_url() ?>index.php/seller/view_barang/<?= $b->id_barang ?>"
-                           class="glyphicon glyphicon-user" aria-hidden="true"> VIEW</a></td>
-                    <td><a href="<?= base_url() ?>index.php/seller/edit_barang/<?= $b->id_barang ?>"
-                           class="glyphicon glyphicon-cog" aria-hidden="true"> EDIT</a></td>
-                    <td><a href="#" onclick="confDelete(<?= $b->id_barang ?>)"
-                           class="glyphicon glyphicon-remove" aria-hidden="true">
-                            DELETE</a></td>
+                    <td align="right"><?= number_format($p->jumlah_jual_detail,0,",",".") ?></td>
+                    <td><?= $p->nama_kota_kirim ?></td>
+                    <td><?= $p->alamat_lengkap_kirim ?></td>
+                    <td><a href="<?= base_url() ?>index.php/seller/correct/<?= $p->id_barang ?>/<?= $p->id_penjualan ?>"
+                           class="glyphicon glyphicon-ok" aria-hidden="true"> Correct</a></td>
+
                     <?php $i += 1; ?>
                 </tr>
 
@@ -183,10 +177,7 @@ $username = $this->session->userdata('username');
 
 
     </table>
-    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/seller/add_barang">ADD <span
-                class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
-    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/seller/penjualan">PENJUALAN <span
-                class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></a></h3>
+
     <br>
 
 

@@ -20,9 +20,11 @@ class Seller extends CI_Controller {
         }
         $this->load->model('kota_provinsi_model');
         $this->load->model('seller_model');
+        $this->load->model('customer_model');
         $this->load->model('login_model');
         $this->load->model('barang_model');
         $this->load->model('admin_model');
+        $this->load->model('penjualan_model');
     }
 
     function index(){
@@ -279,6 +281,49 @@ class Seller extends CI_Controller {
         $data['barang'] = $this->barang_model->show_barang_by($this->uri->segment(3));
 
         $this->load->view('view_barang_view', $data);
+    }
+
+    function penjualan(){
+
+        $data['pilot'] = $this->admin_model->show($this->session->userdata('id_user'));
+        $id_user = $this->session->userdata('id_user');
+        $data['penjualan'] = $this->penjualan_model->detail_by_id_seller($id_user);
+
+        $this->load->view('manage_penjualan_barang_seller', $data);
+    }
+
+    function correct(){
+
+        $this->form_validation->set_rules('no_resi', 'No Resi', 'required|trim|numeric|xss_clean');
+
+
+        if ($this->form_validation->run() == false) {
+
+            $data['pilot']     = $this->admin_model->show($this->session->userdata('id_user'));
+            $data['penjualan'] = $this->penjualan_model->show_penjualan_noresi_seller($this->uri->segment(3),$this->uri->segment(4));
+
+            $this->load->view('no_resi_view', $data);
+        }else{
+            $datapenjualan = [
+                'status_penjualan' => 1,
+            ];
+
+            $this->penjualan_model->update_detail_pesanan_for_seller($this->uri->segment(4),$this->session->userdata('id_user'),$this->uri->segment(3),$this->input->post('no_resi'));
+            $this->penjualan_model->update_penjualan_by_id($this->uri->segment(4),$datapenjualan);
+            $this->session->set_flashdata('category_success', 'Success penjualan change correct.');
+            redirect('/seller/penjualan', [], true);
+        }
+
+    }
+
+    function history_penjualan(){
+        $id_user = $this->session->userdata('id_user');
+
+        $data['penjualan'] = $this->penjualan_model->show_penjualan_correct_seller($id_user);
+
+        $data['customer']       = $this->customer_model->show_customer();
+
+        $this->load->view('history_penjualan_view_seller',$data);
     }
 
     //===============================================================================================================

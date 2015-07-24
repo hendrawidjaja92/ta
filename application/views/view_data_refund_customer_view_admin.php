@@ -40,19 +40,25 @@ $username = $this->session->userdata('username');
                 <button type="submit" class="btn btn-default">Cari</button>
             </form>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="<?= base_url() ?>index.php/customer/">Home</a></li>
+                <li><a href="<?= base_url() ?>index.php/admin">Home</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                        aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="<?= base_url() ?>index.php/customer/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a></li>
-                        <li><a href="<?= base_url() ?>index.php/customer/pesanan_saya/">Pesanan Saya</a></li>
-                        <li><a href="<?= base_url() ?>index.php/customer/wishlist/">Wishlist</a></li>
-                        <li><a href="<?= base_url() ?>index.php/customer/pembayaran/">Pembayaran</a></li>
-                        <li><a href="<?= base_url() ?>index.php/customer/refund/">Refund</a></li>
-                        <li><a href="<?= base_url() ?>index.php/customer/history_belanja/">History Belanja</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a>
+                        </li>
+                        <li><a href="<?= base_url() ?>index.php/admin/manage_pembayaran">Manage Pembayaran</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/manage_barang">Manage Barang</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/manage_refund">Manage Refund</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/manage_supplier">Manage Supplier</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/manage_seller">Manage Seller</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/manage_customer">Manage Customer</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/manage_pegawai">Manage Pegawai</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/pembelian">Pembelian</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/history_penjualan">History Penjualan</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/history_pembelian">History Pembelian</a></li>
                         <li class="divider"></li>
-                        <li><a href="<?= base_url() ?>index.php/customer/logout/">Logout</a></li>
+                        <li><a href="<?= base_url() ?>index.php/admin/logout">Logout</a></li>
                     </ul>
                 </li>
                 <li><a href="#">Tentang Kami</a></li>
@@ -68,27 +74,52 @@ $username = $this->session->userdata('username');
     <li class="list-group-item kategori">
         Kategori
     </li>
-    <?php foreach($kategori_barang->result() as $k): ?>
-        <?php $value = 0; ?>
-
-        <?php foreach($this->barang_model->show_value_kategori($k->id_kategori_barang)->result() as $x): ?>
-
-            <?php $value++; ?>
-        <?php endforeach; ?>
-        <a id="pilih_kategori" href="<?= base_url() . "index.php/customer/a" . $k->id_kategori_barang . "/" . $k->id_kategori_barang ?>">
-            <li id="kategori_barang_value" class="list-group-item" value="<?= $k->id_kategori_barang ?>">
-                <span class="badge"><?= $value ?></span>
-                <?= $k->nama_kategori_barang ?>
-            </li>
-        </a>
-
-    <?php endforeach; ?>
+    <li class="list-group-item">
+        <span class="badge">100</span>
+        Cras justo odio
+    </li>
+    <li class="list-group-item">
+        <span class="badge">14</span>
+        Cras justo odio
+    </li>
+    <li class="list-group-item">
+        <span class="badge">4</span>
+        Cras justo odio
+    </li>
+    <li class="list-group-item">
+        <span class="badge">54</span>
+        Cras justo odio
+    </li>
+    <li class="list-group-item">
+        <span class="badge">144</span>
+        Cras justo odio
+    </li>
+    <li class="list-group-item">
+        <span class="badge">14</span>
+        Cras justo odio
+    </li>
+    <li class="list-group-item">
+        <span class="badge">141</span>
+        Cras justo odio
+    </li>
+    <li class="list-group-item">
+        <span class="badge">1</span>
+        Cras justo odio
+    </li>
+    <li class="list-group-item">
+        <span class="badge">0</span>
+        Cras justo odi
+    </li>
+    <li class="list-group-item">
+        <span class="badge">1400</span>
+        Cras justo odio
+    </li>
 </ul>
 
 <div class="judul-2 col-md-offset-2 col-sm-offset-2 col-xs-offset-2 row" data-example-id="carousel-with-captions">
     <ul class="list-group judul-1">
         <li class="list-group-item judul-1">
-            <h3>Refund</h3>
+            <h3>Manage Refund Customer</h3>
         </li>
     </ul>
     <h3 style="padding-left: 5%">REFUND <span
@@ -99,26 +130,37 @@ $username = $this->session->userdata('username');
     <?php $i = 1; ?>
 
     <?php if ($penjualan->result()) { ?>
-<?php echo form_open('customer/add_refund'); ?>
+<?php echo form_open('admin/manage_refund_customer/'); ?>
 
 
 <?php foreach ($penjualan->result() as $p): ?>
-    <div class="col-md-2 col-md-offset-1">
-        <?php echo form_label('Tanggal :'); ?>
-    </div>
-    <?php
-    $originalDate = $p->tgl_penjualan;
-    $newDate      = date("d - M - Y", strtotime($originalDate));
-    ?>
-    <div class="col-md-0 col-md-offset-1">
-        <?php echo form_label(set_value('tgl_penjualan', $newDate)) ?>
-    </div>
-    <div class="col-md-2 col-md-offset-1">
-        <?php echo form_label('Total :'); ?>
-    </div>
-    <div class="col-md-0 col-md-offset-1">
-        <?php echo form_label(set_value('total_penjualan', "Rp " . number_format($p->total_penjualan, 2, ",", "."))) ?>
-    </div>
+    <?php foreach ($refund->result() as $r): ?>
+        <?php foreach ($detail->result() as $x): ?>
+            <div class="col-md-2 col-md-offset-1">
+            <?php echo form_label('No Resi :'); ?>
+        </div>
+        <div class="col-md-0 col-md-offset-1">
+            <?php echo form_label(set_value('no_faktur_pembelian', $x->no_resi)) ?>
+        </div>
+        <div class="col-md-2 col-md-offset-1">
+            <?php echo form_label('Tanggal :'); ?>
+        </div>
+        <?php
+        $originalDate = $p->tgl_penjualan;
+        $newDate      = date("d - M - Y", strtotime($originalDate));
+        ?>
+        <div class="col-md-0 col-md-offset-1">
+            <?php echo form_label(set_value('tgl_beli', $newDate)) ?>
+        </div>
+        <div class="col-md-2 col-md-offset-1">
+            <?php echo form_label('Total Refund :'); ?>
+        </div>
+        <div class="col-md-0 col-md-offset-1">
+            <?php echo form_label(set_value('total_beli', "Rp " . number_format($r->total_refund_cus, 2, ",", "."))) ?>
+        </div>
+
+    <?php endforeach; ?>
+    <?php endforeach; ?>
 <?php endforeach; ?>
 
 <br>
@@ -131,7 +173,7 @@ $username = $this->session->userdata('username');
             <th style="background-color: black; color: white; text-align: center">Gambar Barang</th>
             <th style="background-color: black; color: white; text-align: center">Nama Barang</th>
             <th style="background-color: black; color: white; text-align: center">Jumlah</th>
-            <th style="background-color: black; color: white; text-align: center">Harga Beli</th>
+            <th style="background-color: black; color: white; text-align: center">Harga</th>
             <th style="background-color: black; color: white; text-align: center">Merk</th>
             <th style="background-color: black; color: white; text-align: center">Kategori Barang</th>
             <th style="background-color: black; color: white; text-align: center">Action</th>
@@ -142,14 +184,14 @@ $username = $this->session->userdata('username');
 
             <?php $data[$i] = $d->id_penjualan ?>
             <tr
-                class="<?= ($d->status_penjualan == 1) ? "alert-success" : "" ?> <?= ($d->status_penjualan == 2) ? "alert-danger" : "" ?>">
+                class="<?= ($d->status_refund_cus == 1) ? "alert-success" : "" ?> <?= ($d->status_refund_cus == 2) ? "alert-danger" : "" ?>">
                 <td><?= $i ?></td>
 
                 <td align="center"><img height="100px" width="150px" src="<?= base_url().$d->gambar_barang ?>" /></td>
                 <td><?= $d->nama_barang ?></td>
-                <td align="right"><?= number_format($d->jumlah_jual_detail, 0, ",", ".") ?></td>
+                <td align="right"><?= number_format($d->jumlah_refund_detail_cus, 0, ",", ".") ?></td>
 
-                <td align="right"><?= "Rp " . number_format($d->harga_jual_detail, 2, ",", ".") ?></td>
+                <td align="right"><?= "Rp " . number_format($d->harga_refund_detail_cus, 2, ",", ".") ?></td>
                 <td align="center"><?= $d->merk_barang ?></td>
 
                 <?php foreach ($kategoriBarang as $key => $value): ?>
@@ -159,13 +201,8 @@ $username = $this->session->userdata('username');
                 <?php endforeach; ?>
 
                 <td align="center"><?= $kategori ?></td>
-                <?php if($d->id_seller == 0): ?>
-                <td align="center"><a href="<?= base_url() ?>index.php/customer/refund_c/<?= $d->id_penjualan ?>/<?= $d->id_barang ?>"
-                       class="glyphicon glyphicon-transfer" aria-hidden="true"> CAN REFUND</a></td>
-                <?php endif; ?>
-                <?php if($d->id_seller != 0): ?>
-                    <td align="center"><a href="#" class="glyphicon glyphicon-transfer" aria-hidden="true"> CAN NOT REFUND</a></td>
-                <?php endif; ?>
+                <td><a href="<?= base_url() ?>index.php/admin/edit_refund/<?= $d->id_barang ?>/<?= $d->id_refund_cus ?>"
+                       class="glyphicon glyphicon-cog" aria-hidden="true"> AGREE</a></td>
                 <?php $i += 1; ?>
             </tr>
 
@@ -179,10 +216,12 @@ $username = $this->session->userdata('username');
 
 
     </table>
+
     <div class="modal-footer col-md-10 col-md-offset-1">
         <?php echo form_submit(array('id' => 'back', 'name' => 'back', 'value' => 'Back', 'class' => 'btn btn-ok')); ?>
     </div>
     <?php echo form_close(); ?>
+
 </div>
 
 <nav class="modal-footer">

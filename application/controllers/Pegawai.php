@@ -23,6 +23,7 @@ class Pegawai extends CI_Controller {
         $this->load->model('pegawai_model');
         $this->load->model('login_model');
         $this->load->model('penjualan_model');
+        $this->load->model('barang_model');
         $this->load->model('admin_model');
     }
 
@@ -119,9 +120,53 @@ class Pegawai extends CI_Controller {
         $this->load->view('manage_pembayaran_view_admin',$data);
     }
 
-    function correct(){
+    function detail()
+    {
+        $data['pilot'] = $this->admin_model->show($this->session->userdata('id_user'));
+
+        $data['kategoriBarang'] = $this->barang_model->show_kategori_barang();
+
+        $data['penjualan'] = $this->penjualan_model->show_penjualan_by_idpenjualan($this->uri->segment(3));
+        $data['detail'] = $this->penjualan_model->show_detail_penjualan_for_pembayaran($this->uri->segment(3));
+
+        $this->load->view('detail_pembayaran_view', $data);
+    }
+
+    function no_resi(){
         foreach($this->penjualan_model->show_detail_penjualan_by_id($this->uri->segment(3))->result() as $a) {
             if ($a->status_penjualan == 1 || $a->status_penjualan == 2) {
+                $this->session->set_flashdata('category_success', 'Cannot change again.');
+                redirect('/pegawai/manage_pembayaran', [], true);
+            }
+        }
+        $cek = 0;
+        foreach($this->penjualan_model->cek_for_no_resi($this->uri->segment(3))->result() as $a) {
+            $cek++;
+        }
+
+        $this->form_validation->set_rules('no_resi', 'No Resi', 'required|trim|numeric|xss_clean');
+
+        if($cek == 0){
+            $this->session->set_flashdata('category_success', 'Success.');
+            $this->correct_seller();
+            redirect('/pegawai/manage_pembayaran', [], true);
+        }
+
+        if ($this->form_validation->run() == false) {
+            $data['pilot'] = $this->admin_model->show($this->session->userdata('id_user'));
+            $data['penjualan'] = $this->penjualan_model->show_penjualan_noresi($this->uri->segment(3));
+
+            $this->load->view('no_resi_view', $data);
+        }else{
+            $this->correct_pegawai();
+        }
+
+
+    }
+
+    function correct_seller(){
+        foreach($this->penjualan_model->show_detail_penjualan_by_id($this->uri->segment(3))->result() as $a) {
+            if ($a->status_penjualan == 1 || $a->status_penjualan == 2 || $a->status_penjualan == 4) {
                 $this->session->set_flashdata('category_success', 'Cannot change again.');
                 redirect('/pegawai/manage_pembayaran', [], true);
             }
@@ -129,7 +174,8 @@ class Pegawai extends CI_Controller {
         $id_user              = $this->session->userdata('id_user');
 
         $data = [
-            'status_penjualan' => 1,
+            'status_penjualan' => 4,
+//            'no_resi' => $this->input->post('no_resi'),
             'id_user' => $id_user
         ];
 
@@ -162,6 +208,55 @@ class Pegawai extends CI_Controller {
 
 
 
+        $this->penjualan_model->update_penjualan_by_id($this->uri->segment(3),$data);
+        $this->session->set_flashdata('category_success', 'Success pembayaran change correct.');
+        redirect('/pegawai/manage_pembayaran', [], true);
+    }
+
+    function correct_pegawai(){
+        foreach($this->penjualan_model->show_detail_penjualan_by_id($this->uri->segment(3))->result() as $a) {
+            if ($a->status_penjualan == 1 || $a->status_penjualan == 2) {
+                $this->session->set_flashdata('category_success', 'Cannot change again.');
+                redirect('/pegawai/manage_pembayaran', [], true);
+            }
+        }
+        $id_user              = $this->session->userdata('id_user');
+
+        $data = [
+            'status_penjualan' => 1,
+            'id_user' => $id_user
+        ];
+
+
+        foreach($this->penjualan_model->show_detail_penjualan_by_id($this->uri->segment(3))->result() as $a){
+            $id_barang = $a->id_barang;
+            $id_customer = $a->id_customer;
+
+            if($a->status_penjualan == 1 || $a->status_penjualan == 2){
+
+            }
+
+            $datalog = [
+                'nilai' => 2
+            ];
+
+            $this->customer_model->update_log_table_by_id_id($id_customer,$id_barang,$datalog);
+
+            foreach($this->barang_model->show_barang_by($id_barang)->result() as $b){
+                $jum = $b->jumlah - $a->jumlah_jual_detail;
+                $databarang = [
+                    'jumlah' =>$jum
+                ];
+
+                $this->barang_model->update_barang($id_barang,$databarang);
+            }
+
+
+        }
+
+
+
+        $this->penjualan_model->update_detail_pesanan_for_admin($this->uri->segment(3),$this->input->post('no_resi'));
         $this->penjualan_model->update_penjualan_by_id($this->uri->segment(3),$data);
         $this->session->set_flashdata('category_success', 'Success pembayaran change correct.');
         redirect('/pegawai/manage_pembayaran', [], true);

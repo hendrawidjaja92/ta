@@ -1,5 +1,5 @@
 <?php
-$id_user  = $this->session->userdata('id_user');
+$id_user = $this->session->userdata('id_user');
 $username = $this->session->userdata('username');
 ?>
 <!DOCTYPE html>
@@ -42,15 +42,17 @@ $username = $this->session->userdata('username');
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="<?= base_url() ?>index.php/seller">Home</a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                       aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
+
                         <li><a href="<?= base_url() ?>index.php/seller/ubah_akun/<?php echo $id_user; ?>">Ubah Akun</a></li>
                         <li><a href="<?= base_url() ?>index.php/seller/manage_barang/">Manage Barang</a></li>
                         <li><a href="<?= base_url() ?>index.php/seller/manage_refund/">Manage Refund</a></li>
                         <li><a href="<?= base_url() ?>index.php/seller/history_penjualan/">History Penjualan</a></li>
                         <li class="divider"></li>
                         <li><a href="<?= base_url() ?>index.php/seller/logout/">Logout</a></li>
+
+
                     </ul>
                 </li>
                 <li><a href="#">Tentang Kami</a></li>
@@ -108,72 +110,63 @@ $username = $this->session->userdata('username');
     </li>
 </ul>
 
-<div class="judul-2 col-md-offset-0 col-sm-offset-2 col-xs-offset-2 col-md-10 row"
-     data-example-id="carousel-with-captions">
+<div class="judul-2 col-md-offset-2 col-sm-offset-2 col-xs-offset-2 row" data-example-id="carousel-with-captions">
     <ul class="list-group judul-1">
         <li class="list-group-item judul-1">
-            <h3>Manage Barang</h3>
+            <h3>History Penjualan</h3>
         </li>
     </ul>
-    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/seller/add_barang">ADD <span
-                class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
-    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/seller/penjualan">PENJUALAN <span
-                class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></a></h3>
-    <?php if ($this->session->flashdata('category_success')) { ?>
-        <div class="alert alert-success"> <?= $this->session->flashdata('category_success') ?> </div>
-    <?php } ?>
-    <h3>Information Color  <span class="glyphicon glyphicon-info-sign"></span></h3>
 
-    <div class="col-md-4 alert-info">Pending Confirmation</div>
-    <br>
-    <div class="col-md-4 alert-success">Succes Confirmation</div>
-    <br>
     <br>
     <table class="table table-hover">
 
-        <tr style="background-color: black; color: white">
-            <th>#</th>
-            <th>Gambar Barang</th>
-            <th>Nama Barang</th>
-            <th>Merk</th>
-            <th>Kategori Barang</th>
-            <th>Stok</th>
-            <th>Harga Jual</th>
-            <th>View</th>
-            <th>Edit</th>
-            <th>Delete</th>
+        <tr style="background-color: black; color: white;">
+            <th style="background-color: black; color: white; text-align: center" >#</th>
+            <th style="background-color: black; color: white; text-align: center">No Resi</th>
+            <th style="background-color: black; color: white; text-align: center">Tanggal</th>
+            <th style="background-color: black; color: white; text-align: center">Total</th>
+            <th style="background-color: black; color: white; text-align: center">Customer</th>
 
         </tr>
         <?php $i = 1; ?>
+        <?php $gtot = 0; ?>
 
-        <?php if ($barang->result()) { ?>
+        <?php if ($penjualan->result()) { ?>
 
-            <?php foreach ($barang->result() as $b): ?>
+            <?php foreach ($penjualan->result() as $p): ?>
 
 
-                <?php $data[$i] = $b->id_barang ?>
+                <?php $data[$i] = $p->id_penjualan ?>
                 <tr
-                    class="<?= ($b->status_barang == 1) ? "alert-success" : "" ?> <?= ($b->status_barang == 2) ? "alert-danger" : "" ?> <?= ($b->status_barang == 3) ? "alert-info" : "" ?>">
+                    class="<?= ($p->status_penjualan == 1) ? "alert-success" : "" ?> <?= ($p->status_penjualan == 2) ? "alert-danger" : "" ?>">
                     <td><?= $i ?></td>
-                    <td><img height="100px" width="150px" src="<?= base_url().$b->gambar_barang ?>"</img></td>
-                    <td><?= $b->nama_barang ?></td>
-                    <td><?= $b->merk_barang ?></td>
-                    <td><?= $b->nama_kategori_barang ?></td>
+                    <td align="center"><?= $p->no_resi ?></td>
 
-                    <td align="right"><?= number_format($b->jumlah,0,",",".") ?></td>
-                    <td align="right"><?= "Rp " . number_format($b->harga_jual,2,",",".") ?></td>
-                    <td><a href="<?= base_url() ?>index.php/seller/view_barang/<?= $b->id_barang ?>"
-                           class="glyphicon glyphicon-user" aria-hidden="true"> VIEW</a></td>
-                    <td><a href="<?= base_url() ?>index.php/seller/edit_barang/<?= $b->id_barang ?>"
-                           class="glyphicon glyphicon-cog" aria-hidden="true"> EDIT</a></td>
-                    <td><a href="#" onclick="confDelete(<?= $b->id_barang ?>)"
-                           class="glyphicon glyphicon-remove" aria-hidden="true">
-                            DELETE</a></td>
+                    <?php
+                    $originalDate = $p->tgl_penjualan;
+                    $newDate = date("d - M - Y", strtotime($originalDate));
+                    ?>
+                    <td align="center"><?= $newDate ?></td>
+                    <td align="right"><?= "Rp " . number_format($p->jumlah_jual_detail*$p->harga_jual_detail ,2,",",".") ?></td>
+                    <?php
+                    foreach ($customer->result() as $c) {
+                        if ($c->id_user == $p->id_customer) {
+                            $nama = $c->nama_user;
+                        }
+                    }
+                    ?>
+                    <td align="center"><?= $nama ?></td>
+
+                    <?php $gtot += $p->jumlah_jual_detail*$p->harga_jual_detail; ?>
                     <?php $i += 1; ?>
                 </tr>
 
             <?php endforeach; ?>
-
+            <tr>
+                <th style="background-color: black; color: white; text-align: center" colspan="3" align="center">GRAND TOTAL</th>
+                <th style="background-color: black; color: white; text-align: right" align="right"><?=  "Rp " . number_format($gtot,2,",",".") ?></th>
+                <th style="background-color: black; color: white; text-align: right" align="right"></th>
+            </tr>
         <?php } else { ?>
             <tr>
                 <td colspan="10" align="center"><b> --------------- Data is empty ---------------</b></td>
@@ -183,12 +176,7 @@ $username = $this->session->userdata('username');
 
 
     </table>
-    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/seller/add_barang">ADD <span
-                class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h3>
-    <h3 style="padding-left: 5%"><a href="<?= base_url() ?>index.php/seller/penjualan">PENJUALAN <span
-                class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></a></h3>
     <br>
-
 
 </div>
 
@@ -215,14 +203,6 @@ $username = $this->session->userdata('username');
             });
         });
     });
-
-    function confDelete(id) {
-        var confimation = window.confirm("Are you sure want to delete this barang");
-        if (confimation) {
-            window.location = "<?= base_url() ?>index.php/seller/delete_barang/" + id;
-        }
-    }
-
 
     $('.carousel').carousel({
         interval: 5000

@@ -53,7 +53,7 @@ class login_model extends CI_Model
 //        printf($row->password);
 //        printf("===");
         if ($result->num_rows() === 1) {
-            if ($row->status_user) {
+            if ($row->status_user == 1) {
 
                 if ($row->password === ($password)) {
 
@@ -106,10 +106,7 @@ class login_model extends CI_Model
         return 'email_not_found';
     }
 
-    private
-    function set_session(
-        $session_data
-    ) {
+    private function set_session($session_data) {
 
         $sess_data = array(
             'id_user'            => $session_data['id_user'],

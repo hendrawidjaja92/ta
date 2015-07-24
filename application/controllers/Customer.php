@@ -117,7 +117,30 @@ class Customer extends CI_Controller {
 
     }
 
+    function pengiriman(){
+
+        $this->form_validation->set_rules('kota_kirim', 'Kota Kirim', 'required|callback_select_check|trim|xss_clean');
+        $this->form_validation->set_rules('alamat_lengkap_kirim', 'Alamat Lengkap Kirim', 'required|trim|xss_clean');
+
+        if ($this->form_validation->run() == false) {
+            $id_user = $this->session->userdata('id_user');
+
+            $data['cart'] = $this->customer_model->cart_table($id_user);
+
+            $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
+
+            $data['kota_kirim'] = $this->kota_provinsi_model->kirimKota();
+
+            $this->load->view('pengiriman_view',$data);
+        }else{
+            $this->buy_customer();
+        }
+
+    }
+
     function buy_customer(){
+
+
         $id_user = $this->session->userdata('id_user');
         $tot = 0;
 
@@ -133,7 +156,10 @@ class Customer extends CI_Controller {
                 'total_penjualan' => $tot,
                 'status_penjualan' => 0,
                 'id_customer' => $id_user,
+                'alamat_lengkap_kirim' => $this->input->post('alamat_lengkap_kirim'),
+                'id_kota_kirim' => $this->input->post('kota_kirim'),
             ];
+
 
             $this->db->insert('penjualan', $data);
 
@@ -162,6 +188,8 @@ class Customer extends CI_Controller {
             $this->session->set_flashdata('category_success', 'Failed belanja barang.');
             redirect('/customer/pesanan_saya/', [], true);
         }
+
+
 
 
 
@@ -248,6 +276,7 @@ class Customer extends CI_Controller {
 
     function pesanan_saya(){
         $id_user = $this->session->userdata('id_user');
+//        $id_user = 37;
 
         $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
         $data['cart'] = $this->customer_model->cart_table($id_user);
@@ -256,51 +285,88 @@ class Customer extends CI_Controller {
         $x=0;
 
 
+        foreach($this->customer_model->log_table_distinct($id_user)->result() as $z) {
+            foreach ($this->customer_model->log_table_all_by_id($id_user)->result() as $b) {
+                foreach ($this->customer_model->log_table_all_by_id($z->id_user)->result() as $c) {
 
-        foreach($this->customer_model->log_table_all()->result() as $a){
-//            for($x = 0 ; $x < 999 ; $x++){
+                    if ($b->id_barang == $c->id_barang) {
+                        $data[$id_user][$z->id_user] =  0;
+                    }
 
-//                foreach($this->customer_model->log_table_distinct()->result() as $z){
-////                    foreach($this->customer_model->log_table_value($z->id_user)->result() as $p) {
-//
-//                    $s_id = 0;
-//                        foreach ($this->customer_model->log_table_all_by_id($z->id_user)->result() as $b) {
-//
-//                            if ($b->id_user != $id_user && $a->id_barang == $b->id_barang) {
-//
-//                                var_dump($b->id_user);
-                                $data[$a->id_user][$a->id_barang] = $a->nilai;
-//                                var_dump("==");
-//
-//                                var_dump($b->nama_user);
-
-                                //                        var_dump($a->nilai);
-//                                var_dump($b->id_barang);
-
-
-                                //                        var_dump($b->nilai);
-                                //                        $data[$x] += $a->nilai * $b->nilai;
-//                            }
-//                        }
-//                    }
-//                    }
-//                    var_dump($data[$id_user][$a->id_barang]);
-
-//                }
-
-
-
-        }
-
-        foreach($this->customer_model->log_table_distinct()->result() as $z) {
-            foreach ($this->customer_model->log_table_all_by_id($z->id_user)->result() as $b) {
-                var_dump($b->nama_user);
-                var_dump($data[$b->id_user][$b->id_barang]);
+                }
             }
         }
 
 
+        foreach($this->customer_model->log_table_distinct_all()->result() as $z) {
+            $bawah[$z->id_user] = 0;
+        }
 
+        foreach($this->customer_model->log_table_distinct_all()->result() as $z) {
+            foreach ($this->customer_model->log_table_all_by_id($z->id_user)->result() as $b) {
+                $bawah[$z->id_user] += $b->nilai * $b->nilai ;
+            }
+            $bawah[$z->id_user] = sqrt($bawah[$z->id_user]);
+        }
+
+
+        foreach($this->customer_model->log_table_distinct($id_user)->result() as $z) {
+            foreach ($this->customer_model->log_table_all_by_id($id_user)->result() as $b) {
+                foreach ($this->customer_model->log_table_all_by_id($z->id_user)->result() as $c) {
+                    if ($b->id_barang == $c->id_barang) {
+                        $data[$id_user][$z->id_user] +=  $b->nilai * $c->nilai;
+                    }
+                }
+            }
+        }
+
+        foreach($this->customer_model->log_table_distinct($id_user)->result() as $z) {
+            $sim[$z->id_user] = 0;
+        }
+
+        foreach($this->customer_model->log_table_distinct($id_user)->result() as $z) {
+            $sim[$z->id_user] = $data[$id_user][$z->id_user]/($bawah[$id_user]*$bawah[$z->id_user]);
+//            var_dump($sim[$z->id_user]);
+
+        }
+
+        foreach($this->customer_model->log_table_all_not_id($id_user)->result() as $z) {
+            $simxbarang[$z->id_user][$z->id_barang] = 0;
+        }
+        foreach($this->customer_model->log_table_all_not_id($id_user)->result() as $z) {
+            $simxbarang[$z->id_user][$z->id_barang] = $sim[$z->id_user] * $z->nilai;
+//            var_dump($simxbarang[$z->id_user][$z->id_barang] . "=" . $z->nama_user. " ID_USER=" . $z->id_user ." ID-BAR=" . $z->id_barang);
+
+        }
+
+        foreach($this->customer_model->log_table_all_not_id($id_user)->result() as $y) {
+            $weight[$y->id_barang] = 0;
+        }
+
+        foreach($this->customer_model->log_table_all_not_id($id_user)->result() as $y) {
+
+            $weight[$y->id_barang] += $simxbarang[$y->id_user][$y->id_barang] ;
+
+//            var_dump("IDXXX".$z->id_barang);
+        }
+
+        $this->db->empty_table('rekomendasi');
+        foreach($this->customer_model->log_table_distinct_barang($id_user)->result() as $y) {
+//            var_dump("BAXQ".$weight[$y->id_barang]."=".$y->id_barang);
+
+            $dataweight = [
+                'id_barang_weight' => $y->id_barang,
+                'nilai_weight_sum' => $weight[$y->id_barang],
+
+            ];
+            $this->db->insert('rekomendasi', $dataweight);
+
+
+        }
+
+        foreach($this->customer_model->rekomendasi($id_user)->result() as $q){
+            var_dump($q->id_barang);
+        }
 
 
         $this->load->view('cart_customer_view', $data);
@@ -538,10 +604,18 @@ class Customer extends CI_Controller {
         $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
         $data['barang'] = $this->barang_model->show_value_kategori($this->uri->segment(3));
 
-        $this->load->view('kategori_baju_view', $data);
+        $this->load->view('kategori_view', $data);
 
     }
 
+    function a7(){
+
+        $data['kategori_barang'] = $this->barang_model->show_kategori_barang_table();
+        $data['barang'] = $this->barang_model->show_value_kategori($this->uri->segment(3));
+
+        $this->load->view('kategori_view', $data);
+
+    }
 
 
 

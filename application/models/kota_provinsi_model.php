@@ -53,4 +53,19 @@ class kota_provinsi_model extends CI_Model
         $query = $this->db->get();
         return $query->result();
     }
+
+    public function kirimKota()
+    {
+        $this->db->select('*');
+        $this->db->from('kota_kirim');
+        $query = $this->db->get();
+        // the query mean select cat_id,category from category
+//        $data[0] = "--Select Kota--";
+//        foreach ($query->result() as $row) {
+////            $data[$row['id_provinsi']]=$row['nama_provinsi'];
+//            $data[$row->id_kota_kirim] = $row->nama_kota_kirim;
+//        }
+        // the fetching data from database is return
+        return $query;
+    }
 } 

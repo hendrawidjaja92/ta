@@ -1,5 +1,5 @@
 <?php
-$id_user = $this->session->userdata('id_user');
+$id_user  = $this->session->userdata('id_user');
 $username = $this->session->userdata('username');
 ?>
 <!DOCTYPE html>
@@ -47,9 +47,9 @@ $username = $this->session->userdata('username');
 
                 <?php if($pil->id_kategori_user == 2): ?>
                     <li><a href="<?= base_url() ?>index.php/pegawai">Home</a></li>
-                <?php endif; ?>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
+                <?php endif; ?>                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-expanded="false"><?php echo $username; ?><span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
                         <?php if($pil->id_kategori_user == 1): ?>
 
@@ -144,162 +144,147 @@ $username = $this->session->userdata('username');
             <h3>Manage Pembayaran</h3>
         </li>
     </ul>
-<br>
-    <?php if ($this->session->flashdata('category_success')) { ?>
-        <div class="alert alert-success"> <?= $this->session->flashdata('category_success') ?> </div>
-    <?php } ?>
-    <h3>Information Color <span class="glyphicon glyphicon-info-sign"></span></h3>
+    <h3 style="padding-left: 5%">DETAIL PENJUALAN <span
+            class="glyphicon glyphicon-list" aria-hidden="true"></span></h3>
+    <br>
 
-    <div class="col-md-4 alert-info">Pending</div>
-    <br>
-    <div class="col-md-4 alert-warning">Wait Seller</div>
-    <br>
-    <div class="col-md-4 alert-danger">False</div>
-    <br>
-    <div class="col-md-4 alert-success">Correct</div>
-    <br>
-    <br>
+
+    <?php $i = 1; ?>
+
+    <?php if ($penjualan->result()) { ?>
+
+<?php if($pil->id_kategori_user == 1): ?>
+<?php echo form_open('admin/manage_pembayaran/'); ?>
+<?php endif; ?>
+
+<?php if($pil->id_kategori_user == 2): ?>
+<?php echo form_open('pegawai/manage_pembayaran/'); ?>
+<?php endif; ?>
+
+
+<?php foreach ($penjualan->result() as $p): ?>
+
+        <div class="col-md-3 col-md-offset-1">
+            <?php echo form_label('Tanggal Penjualan :'); ?>
+        </div>
+        <?php
+        $originalDate = $p->tgl_penjualan;
+        $newDate      = date("d - M - Y", strtotime($originalDate));
+        ?>
+        <div class="col-md-0 col-md-offset-1">
+            <?php echo form_label(set_value('tgl_penjualan', $newDate)) ?>
+        </div>
+        <div class="col-md-3 col-md-offset-1">
+            <?php echo form_label('Kota Kirim :'); ?>
+        </div>
+        <div class="col-md-0 col-md-offset-1">
+            <?php echo form_label(set_value('kota_kirim', $p->nama_kota_kirim)) ?>
+        </div>
+        <div class="col-md-3 col-md-offset-1">
+            <?php echo form_label('Alamat Lengkap Kirim :'); ?>
+        </div>
+        <div class="col-md-0 col-md-offset-1">
+            <?php echo form_label(set_value('alamat_lengkap_kirim', $p->alamat_lengkap_kirim)) ?>
+        </div>
+        <div class="col-md-3 col-md-offset-1">
+            <?php echo form_label('Berita :'); ?>
+        </div>
+        <div class="col-md-0 col-md-offset-1">
+            <?php echo form_label(set_value('berita', $p->berita)) ?>
+        </div>
+        <div class="col-md-3 col-md-offset-1">
+            <?php echo form_label('Total + Biaya Kirim :'); ?>
+        </div>
+
+    <?php
+        foreach($this->penjualan_model->show_kota_kirim($p->id_kota_kirim)->result() as $k){
+            $biaya_kirim = $k->harga_kirim;
+        }
+        $kgberat = 0;
+        $vberat = 0;
+        foreach($this->penjualan_model->show_detail_for_kirim($p->id_penjualan)->result() as $d){
+            $kgberat += ($d->nilai_berat * $d->jumlah_jual_detail);
+    //                        $vberat += ($d->nilai_volume * $d->jumlah_jual_detail);
+        }
+        if($kgberat/1000 > $vberat/6000){
+
+            if($kgberat < 1000){
+                $biaya_kirim = $biaya_kirim;
+            }else{
+                $biaya_kirim = $biaya_kirim*(($kgberat-($kgberat%1000))/1000);
+            }
+        }else{
+            $biaya_kirim = $biaya_kirim*($vberat/6000);
+        }
+
+    ?>
+        <div class="col-md-0 col-md-offset-1">
+
+            <?php echo form_label(set_value('total_beli', "Rp " . number_format($p->total_penjualan+$biaya_kirim, 2, ",", "."))) ?>
+        </div>
+
+<?php endforeach; ?>
+
+
+<br>
+<br>
+
     <table class="table table-hover">
 
-        <tr style="background-color: black; color: white">
-            <th>#</th>
-            <th style="background-color: black; color: white; text-align: center">Tanggal</th>
-            <th style="background-color: black; color: white; text-align: center">Total + Biaya Kirim</th>
-            <th style="background-color: black; color: white; text-align: center">Berita Pengiriman Transfer</th>
-            <th style="background-color: black; color: white; text-align: center">Email Customer</th>
-            <th colspan="3" style="background-color: black; color: white; text-align: center">Action</th>
-
+        <tr style="background-color: black; color: white;">
+            <th style="background-color: black; color: white; text-align: center">#</th>
+            <th style="background-color: black; color: white; text-align: center">No Resi</th>
+            <th style="background-color: black; color: white; text-align: center">Gambar Barang</th>
+            <th style="background-color: black; color: white; text-align: center">Nama Barang</th>
+            <th style="background-color: black; color: white; text-align: center">Jumlah</th>
+            <th style="background-color: black; color: white; text-align: center">Harga</th>
+            <th style="background-color: black; color: white; text-align: center">Merk</th>
+            <th style="background-color: black; color: white; text-align: center">Kategori Barang</th>
 
         </tr>
-        <?php $i = 1; ?>
 
-        <?php if ($penjualan->result()) { ?>
+        <?php foreach ($detail->result() as $d): ?>
 
-            <?php foreach ($penjualan->result() as $p): ?>
+            <?php $data[$i] = $d->id_penjualan ?>
+            <tr
+                class="<?= ($d->status_penjualan == 1) ? "alert-success" : "" ?> <?= ($d->status_penjualan == 2) ? "alert-danger" : "" ?> <?= ($d->status_penjualan == 3) ? "alert-info" : "" ?> <?= ($d->no_resi == 0) ? "alert-warning" : "" ?>">
+                <td><?= $i ?></td>
 
+                <td align="center"><?= $d->no_resi ?></td>
+                <td align="center"><img height="100px" width="150px" src="<?= base_url().$d->gambar_barang ?>" /></td>
+                <td><?= $d->nama_barang ?></td>
+                <td align="right"><?= number_format($d->jumlah_jual_detail, 0, ",", ".") ?></td>
 
-                <?php $data[$i] = $p->id_penjualan ?>
-                <?php $cekresi = 0; ?>
-                <?php foreach($this->penjualan_model->show_detail_penjualan_for_pembayaran($p->id_penjualan)->result() as $xx): ?>
-                    <?php
-                        if($xx->no_resi == 0){
-                            $cekresi++;
-                        }
-                    ?>
+                <td align="right"><?= "Rp " . number_format($d->harga_jual_detail, 2, ",", ".") ?></td>
+                <td align="center"><?= $d->merk_barang ?></td>
+
+                <?php foreach ($kategoriBarang as $key => $value): ?>
+                    <?php if($d->id_kategori_barang == $key){
+                        $kategori = $value;
+                    } ?>
                 <?php endforeach; ?>
 
+                <td align="center"><?= $kategori ?></td>
 
-                <tr
-                    class="<?= ($p->status_penjualan == 1 && $cekresi == 0) ? "alert-success" : "" ?> <?= ($p->status_penjualan == 2) ? "alert-danger" : "" ?> <?= ($p->status_penjualan == 3) ? "alert-info" : "" ?> <?= ($p->status_penjualan == 4 || $cekresi > 0) ? "alert-warning" : "" ?> ">
-                    <td><?= $i ?></td>
-                    <?php
-                    $originalDate = $p->tgl_penjualan;
-                    $newDate = date("d - M - Y", strtotime($originalDate));
-                    $code = "id".$p->id_penjualan.date("dmy", strtotime($originalDate));
+                <?php $i += 1; ?>
+            </tr>
 
-                    foreach($this->penjualan_model->show_kota_kirim($p->id_kota_kirim)->result() as $k){
-                        $biaya_kirim = $k->harga_kirim;
-                    }
-                    $kgberat = 0;
-                    $vberat = 0;
-                    foreach($this->penjualan_model->show_detail_for_kirim($p->id_penjualan)->result() as $d){
-                        $kgberat += ($d->nilai_berat * $d->jumlah_jual_detail);
-//                        $vberat += ($d->nilai_volume * $d->jumlah_jual_detail);
-                    }
-                    if($kgberat/1000 > $vberat/6000){
-
-                        if($kgberat < 1000){
-                            $biaya_kirim = $biaya_kirim;
-                        }else{
-                            $biaya_kirim = $biaya_kirim*(($kgberat-($kgberat%1000))/1000);
-                        }
-                    }else{
-                        $biaya_kirim = $biaya_kirim*($vberat/6000);
-                    }
-                    ?>
-                    <td align="center"><?= $newDate ?></td>
-                    <td align="right"><p id="harga"><?= "Rp " . number_format($p->total_penjualan+$biaya_kirim, 2, ",", ".") ?></p></td>
-                    <td align="center"><?= $p->berita ?></td>
-                    <td align="center"><?= $p->email ?></td>
-
-
-
-                    <?php if($pil->id_kategori_user == 1): ?>
-                        <td align="center">
-                            <a href="<?= base_url() ?>index.php/admin/detail/<?= $p->id_penjualan ?>"
-                               class="glyphicon glyphicon-list" aria-hidden="true"> Detail</a>
-                        </td>
-                        <td align="center">
-                            <a href="<?= base_url() ?>index.php/admin/no_resi/<?= $p->id_penjualan ?>"
-                                              class="glyphicon glyphicon-ok" aria-hidden="true"> Correct</a>
-                        </td>
-                        <td align="center"><a href="<?= base_url() ?>index.php/admin/false/<?= $p->id_penjualan ?>"
-                                              class="glyphicon glyphicon-remove-sign" aria-hidden="true"> False</a></td>
-                    <?php endif; ?>
-                    <?php if($pil->id_kategori_user == 2): ?>
-                        <td align="center"><a href="<?= base_url() ?>index.php/pegawai/detail/<?= $p->id_penjualan ?>"
-                                              class="glyphicon glyphicon-list" aria-hidden="true"> Detail</a></td>
-                        <td align="center"><a href="<?= base_url() ?>index.php/pegawai/no_resi/<?= $p->id_penjualan ?>"
-                                              class="glyphicon glyphicon-ok" aria-hidden="true"> Correct</a></td>
-                        <td align="center"><a href="<?= base_url() ?>index.php/pegawai/false/<?= $p->id_penjualan ?>"
-                                              class="glyphicon glyphicon-remove-sign" aria-hidden="true"> False</a></td>
-                    <?php endif; ?>
-
-                    <?php $i += 1; ?>
-
-                </tr>
-
-            <?php endforeach; ?>
-
+        <?php endforeach; ?>
 
         <?php } else { ?>
             <tr>
                 <td colspan="10" align="center"><b> --------------- Data is empty ---------------</b></td>
             </tr>
         <?php } ?>
-        <?php endforeach; ?>
-
-
 
 
     </table>
 
-    <!--// =============================================================================================================-->
-    <div class="modal fade no_resi" tabindex="-1" role="dialog"
-         aria-labelledby="myLargeModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-header-edit">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">×</span></button>
-                    <h4>Correct</h4></div>
-                <!--            --><?php //echo form_open('admin/pembelian'); ?>
-                <div class="modal-body row">
-                    <div class="col-md-offset-1">
-                        <?php echo form_label("No Resi : "); ?>
-                    </div>
-                    <div class="col-md-offset-1 col-md-10">
-                        <?php echo form_input([
-                            'id'        => 'no_resi',
-                            'name'      => 'no_resi',
-                            'class'     => 'form-control',
-                            'value'     => set_value('no_resi', ''),
-                        ]); ?>
-                    </div>
-                    <br>
-                    <br>
-                    <div class="col-md-offset-4">
-                        <a href="<?= base_url() ?>index.php/admin/correct/<?= $p->id_penjualan ?>"
-                           class="glyphicon glyphicon-ok" aria-hidden="true"> Correct</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="modal-footer col-md-10 col-md-offset-1">
+        <?php echo form_submit(array('id' => 'back', 'name' => 'back', 'value' => 'Back', 'class' => 'btn btn-ok')); ?>
     </div>
-    <!--// =============================================================================================================-->
-
-    <br>
-    <br>
+    <?php echo form_close(); ?>
+    <?php endforeach; ?>
 
 </div>
 

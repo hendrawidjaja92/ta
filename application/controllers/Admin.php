@@ -128,7 +128,101 @@ class Admin extends CI_Controller
         $this->load->view('manage_pembayaran_view_admin',$data);
     }
 
-    function correct(){
+    function detail()
+    {
+        $data['pilot'] = $this->admin_model->show($this->session->userdata('id_user'));
+
+        $data['kategoriBarang'] = $this->barang_model->show_kategori_barang();
+
+        $data['penjualan'] = $this->penjualan_model->show_penjualan_by_idpenjualan($this->uri->segment(3));
+        $data['detail'] = $this->penjualan_model->show_detail_penjualan_for_pembayaran($this->uri->segment(3));
+
+        $this->load->view('detail_pembayaran_view', $data);
+    }
+
+    function no_resi(){
+        foreach($this->penjualan_model->show_detail_penjualan_by_id($this->uri->segment(3))->result() as $a) {
+            if ($a->status_penjualan == 1 || $a->status_penjualan == 2) {
+                $this->session->set_flashdata('category_success', 'Cannot change again.');
+                redirect('/admin/manage_pembayaran', [], true);
+            }
+        }
+        $cek = 0;
+        foreach($this->penjualan_model->cek_for_no_resi($this->uri->segment(3))->result() as $a) {
+            $cek++;
+        }
+
+        $this->form_validation->set_rules('no_resi', 'No Resi', 'required|trim|numeric|xss_clean');
+
+
+        if($cek == 0){
+            $this->session->set_flashdata('category_success', 'Success.');
+            $this->correct_seller();
+            redirect('/admin/manage_pembayaran', [], true);
+        }
+
+        if ($this->form_validation->run() == false) {
+            $data['pilot'] = $this->admin_model->show($this->session->userdata('id_user'));
+            $data['penjualan'] = $this->penjualan_model->show_penjualan_noresi($this->uri->segment(3));
+
+            $this->load->view('no_resi_view', $data);
+        }else{
+            $this->correct_admin();
+        }
+
+    }
+
+    function correct_seller(){
+        foreach($this->penjualan_model->show_detail_penjualan_by_id($this->uri->segment(3))->result() as $a) {
+            if ($a->status_penjualan == 1 || $a->status_penjualan == 2 || $a->status_penjualan == 4) {
+                $this->session->set_flashdata('category_success', 'Cannot change again.');
+                redirect('/admin/manage_pembayaran', [], true);
+            }
+        }
+        $id_user              = $this->session->userdata('id_user');
+
+        $data = [
+            'status_penjualan' => 4,
+//            'no_resi' => $this->input->post('no_resi'),
+            'id_user' => $id_user
+        ];
+
+        foreach($this->penjualan_model->show_detail_penjualan_by_id($this->uri->segment(3))->result() as $a){
+            $id_barang = $a->id_barang;
+            $id_customer = $a->id_customer;
+
+            if($a->status_penjualan == 1 || $a->status_penjualan == 2){
+
+            }
+
+            $datalog = [
+                'nilai' => 2
+            ];
+
+            $this->customer_model->update_log_table_by_id_id($id_customer,$id_barang,$datalog);
+
+            foreach($this->barang_model->show_barang_by($id_barang)->result() as $b){
+                $jum = $b->jumlah - $a->jumlah_jual_detail;
+                $databarang = [
+                    'jumlah' =>$jum
+                ];
+
+                $this->barang_model->update_barang($id_barang,$databarang);
+            }
+
+
+        }
+
+
+
+
+        $this->penjualan_model->update_penjualan_by_id($this->uri->segment(3),$data);
+        $this->session->set_flashdata('category_success', 'Success pembayaran change correct.');
+        redirect('/admin/manage_pembayaran', [], true);
+    }
+
+
+    function correct_admin(){
         foreach($this->penjualan_model->show_detail_penjualan_by_id($this->uri->segment(3))->result() as $a) {
             if ($a->status_penjualan == 1 || $a->status_penjualan == 2) {
                 $this->session->set_flashdata('category_success', 'Cannot change again.');
@@ -171,6 +265,8 @@ class Admin extends CI_Controller
 
 
 
+
+        $this->penjualan_model->update_detail_pesanan_for_admin($this->uri->segment(3),$this->input->post('no_resi'));
         $this->penjualan_model->update_penjualan_by_id($this->uri->segment(3),$data);
         $this->session->set_flashdata('category_success', 'Success pembayaran change correct.');
         redirect('/admin/manage_pembayaran', [], true);
@@ -208,7 +304,7 @@ class Admin extends CI_Controller
 
     function manage_barang()
     {
-        $data['barang'] = $this->barang_model->show_barang();
+        $data['barang'] = $this->barang_model->show_barang_admin();
         $this->load->view('manage_barang_view_admin', $data);
     }
 
@@ -464,6 +560,23 @@ class Admin extends CI_Controller
         redirect('/admin/add_kategori_barang', [], 'refresh');
     }
 
+    function manage_refund_customer(){
+
+        $data['refund']         = $this->refund_model->show_detail_refund_cus();
+        $this->load->view('manage_refund_customer_view', $data);
+
+    }
+
+    function edit_refund()
+    {
+        $datarefund = [
+            'status_refund_cus' => 1
+        ];
+        $this->refund_model->update_refund_customer_by_id($this->uri->segment(4),$datarefund);
+        $this->session->set_flashdata('category_success', 'Success update refund.');
+        redirect('/admin/manage_refund_customer/', [], true);
+    }
+
     function manage_refund()
     {
 
@@ -502,7 +615,16 @@ class Admin extends CI_Controller
         $this->load->view('view_data_refund', $data);
     }
 
+    function view_data_refund_customer(){
+        $data['refund']         = $this->refund_model->show_refund_customer_by_id($this->uri->segment(4));
+        $data['detail'] = $this->refund_model->show_detail_refund_customer_by_id_ref($this->uri->segment(4));
+        $data['kategoriBarang'] = $this->barang_model->show_kategori_barang();
 
+        $data['penjualan'] = $this->penjualan_model->show_penjualan_by_id($this->uri->segment(3));
+
+        $this->load->view('view_data_refund_customer_view_admin', $data);
+
+    }
 
     function refund()
     {

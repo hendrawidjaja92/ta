@@ -108,7 +108,7 @@ $username = $this->session->userdata('username');
         <tr style="background-color: black; color: white">
             <th>#</th>
             <th style="background-color: black; color: white; text-align: center">Tanggal</th>
-            <th style="background-color: black; color: white; text-align: center">Total</th>
+            <th style="background-color: black; color: white; text-align: center">Total Bayar + Pengiriman</th>
             <th style="background-color: black; color: white; text-align: center">Berita Pengiriman Transfer</th>
             <th style="background-color: black; color: white; text-align: center">Action</th>
 
@@ -128,9 +128,31 @@ $username = $this->session->userdata('username');
                     $originalDate = $p->tgl_penjualan;
                     $newDate = date("d - M - Y", strtotime($originalDate));
                     $code = "id".$p->id_penjualan.date("dmy", strtotime($originalDate));
+
+                    foreach($this->penjualan_model->show_kota_kirim($p->id_kota_kirim)->result() as $k){
+                        $biaya_kirim = $k->harga_kirim;
+                    }
+                    $kgberat = 0;
+                    $vberat = 0;
+                    foreach($this->penjualan_model->show_detail_for_kirim($p->id_penjualan)->result() as $d){
+                        $kgberat += ($d->nilai_berat * $d->jumlah_jual_detail);
+//                        $vberat += ($d->nilai_volume * $d->jumlah_jual_detail);
+                    }
+                    if($kgberat/1000 > $vberat/6000){
+
+                        if($kgberat < 1000){
+                            $biaya_kirim = $biaya_kirim;
+                        }else{
+                            $biaya_kirim = $biaya_kirim*(($kgberat-($kgberat%1000))/1000);
+                        }
+                    }else{
+                        $biaya_kirim = $biaya_kirim*($vberat/6000);
+                    }
+
+
                     ?>
                     <td align="center"><?= $newDate ?></td>
-                    <td align="right"><p id="harga"><?= "Rp " . number_format($p->total_penjualan, 2, ",", ".") ?></p></td>
+                    <td align="right"><p id="harga"><?= "Rp " . number_format($p->total_penjualan+$biaya_kirim, 2, ",", ".") ?></p></td>
                     <td align="center"><?= $code ?></td>
 
                     <td align="center"><a href="<?= base_url() ?>index.php/customer/bayar/<?= $p->id_penjualan ?>/<?= $code ?>"

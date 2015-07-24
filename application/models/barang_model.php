@@ -21,6 +21,15 @@ class barang_model extends CI_Model{
         return $query;
     }
 
+    public function show_barang_admin(){
+        $this->db->where('id_seller', 0);
+        $this->db->join('kategori_barang', 'kategori_barang.id_kategori_barang = barang.id_kategori_barang');
+
+        $query = $this->db->get('barang');
+
+        return $query;
+    }
+
     public function show_barang_by_seller(){
         $this->db->where('s.id_kategori_user', 3);
         $this->db->join('user as s', 's.id_user = barang.id_seller');
@@ -33,8 +42,10 @@ class barang_model extends CI_Model{
     }
 
     public function show_value_kategori($id){
-        $this->db->where('id_kategori_barang', $id);
-        $this->db->where('jumlah >', 0);
+        $this->db->where('barang.id_kategori_barang', $id);
+        $this->db->where('barang.jumlah >', 0);
+        $this->db->where('barang.status_barang ', 1);
+        $this->db->join('kategori_barang as k', 'k.id_kategori_barang = barang.id_kategori_barang');
 
         $query = $this->db->get('barang');
 
