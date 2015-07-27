@@ -129,7 +129,11 @@ class Home extends CI_Controller
             'trim|required|md5|matches[reg_password]|xss_clean');
 
         $this->form_validation->set_rules('reg_nama_user', 'Nama User', 'required|trim|alpha|xss_clean');
-        $this->form_validation->set_rules('reg_nama_perusahaan', 'Nama Perusahaan', 'required|trim|xss_clean');
+
+        if($this->input->post('kategori') == 3) {
+            $this->form_validation->set_rules('reg_nama_perusahaan', 'Nama Perusahaan', 'required|trim|xss_clean');
+        }
+
         $this->form_validation->set_rules('reg_alamat', 'Alamat', 'required|trim|xss_clean');
         $this->form_validation->set_rules('reg_no_telepon', 'No Telepon', 'required|trim|numeric|xss_clean');
 //        $this->form_validation->set_rules('reg_jenis_kelamin', 'Jenis Kelamin', 'required|trim|xss_clean');
@@ -159,6 +163,7 @@ class Home extends CI_Controller
 //                    $this->load->view('admin_view', $data);
                     $response['result'] = 'success';
                     $response['url']    = '/';
+                    $this->mail_register($this->input->post('reg_email'),$this->input->post('reg_username'));
                     break;
                 case 'email_failed':
                     $response['result'] = 'error';
@@ -172,6 +177,34 @@ class Home extends CI_Controller
             echo json_encode($response);
         }
     }
+
+    function mail_register($email,$nama){
+        require_once(APPPATH.'libraries/PHPMailerAutoload.php');
+        require_once(APPPATH.'libraries/phpmailer.php');
+        require_once(APPPATH.'libraries/smtp.php');
+        $mail = new PHPMailer();
+        $mail->IsSMTP(); // we are going to use SMTP
+        $mail->SMTPAuth   = true; // enabled SMTP authentication
+        $mail->SMTPSecure = "ssl";  // prefix for secure protocol to connect to the server
+        $mail->Host       = "smtp.gmail.com";      // setting GMail as our SMTP server
+        $mail->Port       = 465;                   // SMTP port to connect to GMail
+        $mail->Username   = "toko.kenal.jaya@gmail.com";  // user email address
+        $mail->Password   = "kenaljaya123";            // password in GMail
+        $mail->SetFrom('toko.kenal.jaya@gmail.com', 'Toko Kenal Jaya Online');  //Who is sending the email
+        $mail->Subject    = "Register Akun Toko Kenal Jaya Online";
+        $link = "<a rel='nofollow' target='_blank' href='https://www.tokokenaljayaonline.com/home/aktivasi/$email'>https://www.tokokenaljayaonline.com/home/aktivasi</a>";
+        $mail->Body      = "Hi $nama,\nTerima kasih telah bergabung dengan Toko Kenal Jaya Online silahkan klik link untuk mengaktivasi akun anda $link";
+        $mail->AltBody    = "Plain text message";
+        $destino = "$email"; // penerima email
+        $mail->AddAddress($destino, $nama);
+
+        if(!$mail->Send()) {
+            echo "Error: " . $mail->ErrorInfo;
+        } else {
+            echo "Message sent correctly!";
+        }
+    }
+
 
     //===============================================================================================================
     //===============================================================================================================

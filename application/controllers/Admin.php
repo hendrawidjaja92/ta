@@ -737,6 +737,8 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('kota', 'Kota', 'required|callback_select_check|trim|xss_clean');
 
         if ($this->form_validation->run() == false) {
+            $data['pilot'] = $this->admin_model->show($this->session->userdata('id_user'));
+
             $data['provinsiDrop'] = $this->kota_provinsi_model->getProvinsi();
             if ($this->input->post('provinsi') == null) {
                 $id = 0;
@@ -896,6 +898,8 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('kota', 'Kota', 'required|callback_select_check|trim|xss_clean');
 
         if ($this->form_validation->run() == false) {
+            $data['pilot'] = $this->admin_model->show($this->session->userdata('id_user'));
+
             $data['provinsiDrop'] = $this->kota_provinsi_model->getProvinsi();
             if ($this->input->post('provinsi') == null) {
                 $id = 0;

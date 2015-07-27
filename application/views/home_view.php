@@ -109,6 +109,7 @@
                 $kategori_user    = array();
                 $kategori_user[0] = '--Select Kategori--';
                 $this->db->select('*');
+                $this->db->where_in('id_kategori_user', [3,5]);
                 $query = $this->db->get('kategori_user');
                 if ($query->num_rows() > 0) {
                     foreach ($query->result() as $row) {
@@ -125,8 +126,8 @@
                         'id'    => 'kategori',
                         'name'  => 'kategori',
                         'class' => 'form-control',
-                        'value' => set_value('kategori', "")
-                    ), $kategori_user);
+                        'onchange' => 'kt()',
+                        'value' => set_value('kategori', "")), $kategori_user);
                     ?>
                 </div>
                 <?php echo form_error('kategori'); ?>
@@ -189,7 +190,7 @@
                     )); ?>
                 </div>
                 <?php echo form_error('reg_nama_user'); ?>
-                <div class="col-md-9 col-md-offset-3">
+                <div class="col-md-9 col-md-offset-3" id="lblnp" style="<?= ($this->input->post('kategori') == 3) ? "display: block" : "display: none"; ?>">
                     <?php echo form_label('Nama Perusahaan :'); ?>
                 </div>
                 <div class="col-md-5 col-md-offset-3">
@@ -197,10 +198,13 @@
                         'id'    => 'reg_nama_perusahaan',
                         'name'  => 'reg_nama_perusahaan',
                         'class' => 'form-control',
+                        'style'=> ($this->input->post('kategori') == 3) ? "display: block" : "display: none",
                         'value' => set_value('reg_nama_perusahaan', "")
                     )); ?>
                 </div>
-                <?php echo form_error('reg_nama_perusahaan'); ?>
+                <div id="lblanp">
+                    <?php echo form_error('reg_nama_perusahaan'); ?>
+                </div>
                 <div class="col-md-9 col-md-offset-3">
                     <?php echo form_label('Alamat :'); ?>
                 </div>
@@ -738,6 +742,37 @@
             });
         });
     });
+
+//    $(document).ready(function () {
+//        $("#kategori").change(function () {
+//            if($(this).val() == 3){
+//                alert("A");
+//                document.getElementById("lblnp").style.display='block';
+//                document.getElementById("lblanp").style.display='block';
+//                document.getElementById("reg_nama_perusahaan").style.display='block';
+//            }else if($(this).val() == 5){
+//                alert("B");
+//                document.getElementById("lblnp").style.display = 'none';
+//                document.getElementById("lblanp").style.display = 'none';
+//                document.getElementById("reg_nama_perusahaan").style.display = 'none';
+//            }
+//        });
+//    });
+
+    function kt(){
+        if($("#kategori").val() == 3){
+//            alert("A");
+            document.getElementById("lblnp").style.display='block';
+            document.getElementById("lblanp").style.display='block';
+            document.getElementById("reg_nama_perusahaan").style.display='block';
+        }else if($("#kategori").val() == 5){
+//            alert("B");
+            document.getElementById("lblnp").style.display = 'none';
+            document.getElementById("lblanp").style.display = 'none';
+            document.getElementById("reg_nama_perusahaan").style.display = 'none';
+
+        }
+    }
 
     $('.carousel').carousel({
         interval: 5000
